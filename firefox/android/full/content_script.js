@@ -10,7 +10,7 @@ MT['routes']['extension_imports_webpage_path'] = '/extension/imports/webpage';
 MT['globals']['IFRAME_CONTAINER_CLASS'] = 'mediatag_iframe_container_class_for_import_from_extension';
 MT['globals']['SCREENSHOT_ELEMENT_DATA_CONTAINER_CLASS'] = 'mediatag_screenshot_element_data_container';
 window.environment='production';
-window.server_url='http://192.168.0.5:5000';
+window.server_url='https://mediatag.io';
 window.extension_browser='firefox';
 window.extension_os='android';
 /* GLOBALS END */
