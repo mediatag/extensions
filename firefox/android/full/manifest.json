@@ -63,7 +63,7 @@
   ],
   "applications": {
     "gecko": {
-      "id": "gui@mediatag.io"
+      "id": "gui-android@mediatag-dev.io"
     }
   },
   "page_action": {

@@ -37,17 +37,5 @@
     "logo/mediatag.64.png",
     "logo/mediatag.128.png",
     "logo/mediatag.256.png"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://mediatag.io/*",
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "content_script.js"
-      ]
-    }
   ]
 }
