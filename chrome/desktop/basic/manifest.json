@@ -1,6 +1,6 @@
 {
   "name": "mediatag basic",
-  "version": "0.1.50",
+  "version": "0.1.51",
   "manifest_version": 2,
   "description": "Tag anything",
   "icons": {
@@ -24,7 +24,8 @@
   "minimum_chrome_version": "9",
   "permissions": [
     "activeTab",
-    "contextMenus"
+    "contextMenus",
+    "https://mediatag.io/*"
   ],
   "web_accessible_resources": [
     "manifest.json",
@@ -37,5 +38,15 @@
     "logo/mediatag.64.png",
     "logo/mediatag.128.png",
     "logo/mediatag.256.png"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mediatag.io/*"
+      ],
+      "js": [
+        "content_script.js"
+      ]
+    }
   ]
 }
