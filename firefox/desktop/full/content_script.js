@@ -13,6 +13,7 @@ window.environment='production';
 window.server_url='https://mediatag.io';
 window.extension_browser='firefox';
 window.extension_os='desktop';
+window.full_permissions=true;
 /* GLOBALS END */
 /*!
  * jQuery JavaScript Library v3.2.1
@@ -11916,6 +11917,250 @@ return jQuery;
 
 }).call(this);
 (function() {
+  var Color;
+
+  Color = (function() {
+    function Color() {}
+
+    Color.html = {
+      aliceblue: 'f0f8ff',
+      antiquewhite: 'faebd7',
+      aqua: '00ffff',
+      aquamarine: '7fffd4',
+      azure: 'f0ffff',
+      beige: 'f5f5dc',
+      bisque: 'ffe4c4',
+      black: '000000',
+      blanchedalmond: 'ffebcd',
+      blue: '0000ff',
+      blueviolet: '8a2be2',
+      brown: 'a52a2a',
+      burlywood: 'deb887',
+      cadetblue: '5f9ea0',
+      chartreuse: '7fff00',
+      chocolate: 'd2691e',
+      coral: 'ff7f50',
+      cornflowerblue: '6495ed',
+      cornsilk: 'fff8dc',
+      crimson: 'dc143c',
+      cyan: '00ffff',
+      darkblue: '00008b',
+      darkcyan: '008b8b',
+      darkgoldenrod: 'b8860b',
+      darkgray: 'a9a9a9',
+      darkgrey: 'a9a9a9',
+      darkgreen: '006400',
+      darkkhaki: 'bdb76b',
+      darkmagenta: '8b008b',
+      darkolivegreen: '556b2f',
+      darkorange: 'ff8c00',
+      darkorchid: '9932cc',
+      darkred: '8b0000',
+      darksalmon: 'e9967a',
+      darkseagreen: '8fbc8f',
+      darkslateblue: '483d8b',
+      darkslategray: '2f4f4f',
+      darkslategrey: '2f4f4f',
+      darkturquoise: '00ced1',
+      darkviolet: '9400d3',
+      deeppink: 'ff1493',
+      deepskyblue: '00bfff',
+      dimgray: '696969',
+      dimgrey: '696969',
+      dodgerblue: '1e90ff',
+      firebrick: 'b22222',
+      floralwhite: 'fffaf0',
+      forestgreen: '228b22',
+      fuchsia: 'ff00ff',
+      gainsboro: 'dcdcdc',
+      ghostwhite: 'f8f8ff',
+      gold: 'ffd700',
+      goldenrod: 'daa520',
+      gray: '808080',
+      grey: '808080',
+      green: '008000',
+      greenyellow: 'adff2f',
+      honeydew: 'f0fff0',
+      hotpink: 'ff69b4',
+      indianred: 'cd5c5c',
+      indigo: '4b0082',
+      ivory: 'fffff0',
+      khaki: 'f0e68c',
+      lavender: 'e6e6fa',
+      lavenderblush: 'fff0f5',
+      lawngreen: '7cfc00',
+      lemonchiffon: 'fffacd',
+      lightblue: 'add8e6',
+      lightcoral: 'f08080',
+      lightcyan: 'e0ffff',
+      lightgoldenrodyellow: 'fafad2',
+      lightgray: 'd3d3d3',
+      lightgrey: 'd3d3d3',
+      lightgreen: '90ee90',
+      lightpink: 'ffb6c1',
+      lightsalmon: 'ffa07a',
+      lightseagreen: '20b2aa',
+      lightskyblue: '87cefa',
+      lightslategray: '778899',
+      lightslategrey: '778899',
+      lightsteelblue: 'b0c4de',
+      lightyellow: 'ffffe0',
+      lime: '00ff00',
+      limegreen: '32cd32',
+      linen: 'faf0e6',
+      magenta: 'ff00ff',
+      maroon: '800000',
+      mediumaquamarine: '66cdaa',
+      mediumblue: '0000cd',
+      mediumorchid: 'ba55d3',
+      mediumpurple: '9370db',
+      mediumseagreen: '3cb371',
+      mediumslateblue: '7b68ee',
+      mediumspringgreen: '00fa9a',
+      mediumturquoise: '48d1cc',
+      mediumvioletred: 'c71585',
+      midnightblue: '191970',
+      mintcream: 'f5fffa',
+      mistyrose: 'ffe4e1',
+      moccasin: 'ffe4b5',
+      navajowhite: 'ffdead',
+      navy: '000080',
+      oldlace: 'fdf5e6',
+      olive: '808000',
+      olivedrab: '6b8e23',
+      orange: 'ffa500',
+      orangered: 'ff4500',
+      orchid: 'da70d6',
+      palegoldenrod: 'eee8aa',
+      palegreen: '98fb98',
+      paleturquoise: 'afeeee',
+      palevioletred: 'db7093',
+      papayawhip: 'ffefd5',
+      peachpuff: 'ffdab9',
+      peru: 'cd853f',
+      pink: 'ffc0cb',
+      plum: 'dda0dd',
+      powderblue: 'b0e0e6',
+      purple: '800080',
+      rebeccapurple: '663399',
+      red: 'ff0000',
+      rosybrown: 'bc8f8f',
+      royalblue: '4169e1',
+      saddlebrown: '8b4513',
+      salmon: 'fa8072',
+      sandybrown: 'f4a460',
+      seagreen: '2e8b57',
+      seashell: 'fff5ee',
+      sienna: 'a0522d',
+      silver: 'c0c0c0',
+      skyblue: '87ceeb',
+      slateblue: '6a5acd',
+      slategray: '708090',
+      slategrey: '708090',
+      snow: 'fffafa',
+      springgreen: '00ff7f',
+      steelblue: '4682b4',
+      tan: 'd2b48c',
+      teal: '008080',
+      thistle: 'd8bfd8',
+      tomato: 'ff6347',
+      turquoise: '40e0d0',
+      violet: 'ee82ee',
+      wheat: 'f5deb3',
+      white: 'ffffff',
+      whitesmoke: 'f5f5f5',
+      yellow: 'ffff00',
+      yellowgreen: '9acd32'
+    };
+
+    Color.hex_to_rgb = function(hex) {
+      return _.map([0, 1, 2], function(i) {
+        return parseInt(hex.substr(i * 2, 2), 16);
+      });
+    };
+
+    Color.rgb_to_hsl = function(r, g, b) {
+      var d, h, l, max, min, s;
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      max = Math.max(r, g, b);
+      min = Math.min(r, g, b);
+      l = (max + min) / 2;
+      if (max === min) {
+        h = s = 0;
+      } else {
+        d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+          case g:
+            h = (b - r) / d + 2;
+            break;
+          case b:
+            h = (r - g) / d + 4;
+        }
+        h = Math.round((h / 6) * 360);
+        s = Math.round(s * 100);
+        l = Math.round(l * 100);
+      }
+      return [h, s, l];
+    };
+
+    Color.hex_to_hsl = function(hex) {
+      var rgb;
+      rgb = this.hex_to_rgb(hex);
+      return this.rgb_to_hsl(rgb[0], rgb[1], rgb[2]);
+    };
+
+    Color.str_to_hue = function(str) {
+      var seeds;
+      seeds = 0;
+      _.each(str.split(''), function(char, i) {
+        return seeds += char.charCodeAt(0) * (i * 31);
+      });
+      return seeds % 360;
+    };
+
+    Color.hue_from_name = function(name) {
+      var hex;
+      hex = this.html[name];
+      if (hex != null) {
+        return this.hex_to_hsl(hex)[0];
+      } else {
+        return this.str_to_hue(name);
+      }
+    };
+
+    Color.hsl_from_name = function(name) {
+      var hue, l, s;
+      s = 90;
+      l = 90;
+      if (name === 'white') {
+        s = 99;
+        l = 99;
+      } else if (name === 'black') {
+        s = 0;
+        l = 60;
+      } else if (_.includes(name, 'light')) {
+        l = 95;
+      } else if (_.includes(name, 'dark')) {
+        l = 80;
+      }
+      hue = this.hue_from_name(name);
+      return "hsl(" + hue + ", " + s + "%, " + l + "%)";
+    };
+
+    return Color;
+
+  })();
+
+  window.Color = Color;
+
+}).call(this);
+(function() {
   if (window.MT == null) {
     window.MT = {};
   }
@@ -12027,6 +12272,30 @@ return jQuery;
       }
       url = "" + window.server_url + url;
       return url;
+    };
+
+    Url.prototype.resolve_url = function(url) {
+      if ((url == null) || url.length === 0) {
+        return url;
+      }
+      if (url.slice(0, 4) === 'data') {
+        return url;
+      }
+      if (url.slice(0, 4) === 'http') {
+        return url;
+      }
+      if (url.slice(0, 4) === 'chro') {
+        return url;
+      }
+      if (url.slice(0, 2) === '//') {
+        return "" + window.location.protocol + url;
+      } else {
+        if (url[0] === '/') {
+          return "" + location.origin + url;
+        } else {
+          return "" + location.href + url;
+        }
+      }
     };
 
     return Url;
@@ -12247,6 +12516,325 @@ return jQuery;
       }
     }
   });
+
+}).call(this);
+(function() {
+  var TagsDisplayer;
+
+  TagsDisplayer = (function() {
+    function TagsDisplayer() {
+      this.link_class_with_considered_url = 'mediatag_tag_link_from_content_script';
+      this.init();
+    }
+
+    TagsDisplayer.prototype.link_class_with_added_tags = function() {
+      return 'mediatag_tag_link_with_added_tags';
+    };
+
+    TagsDisplayer.prototype.init = function() {
+      console.log("init");
+      this.tags_by_urls = {};
+      this.links_by_url = {};
+      this.availabilities_by_host = {};
+      return this.query_user_preferences((function(_this) {
+        return function() {
+          _this.set_mutation_events();
+          _this.find_urls();
+          return _this.query_tags(function() {
+            return _this.display_tags();
+          });
+        };
+      })(this));
+    };
+
+    TagsDisplayer.prototype.set_mutation_events = function() {
+      var observer;
+      observer = new MutationObserver((function(_this) {
+        return function(mutations) {
+          var added_nodes;
+          added_nodes = _.uniq(_.flatten(_.map(mutations, function(mutation) {
+            return mutation.addedNodes;
+          })));
+          console.log(added_nodes.length + " new nodes");
+          _.each(added_nodes, function(added_node) {
+            added_node = $(added_node);
+            if (added_node.attr('href')) {
+              return _this.add_link_url(added_node);
+            } else {
+              return _this.find_urls(added_node);
+            }
+          });
+          return _this.query_tags(function() {
+            return _this.display_tags();
+          });
+        };
+      })(this));
+      return observer.observe(document.body, {
+        subtree: true,
+        childList: true
+      });
+    };
+
+    TagsDisplayer.prototype.display_tags = function() {
+      return _.each(_.keys(this.tags_by_urls), (function(_this) {
+        return function(url) {
+          var first_link, links, tag_container, tags;
+          links = _this.links_by_url[url];
+          tags = _this.tags_by_urls[url];
+          first_link = null;
+          _.each(links, function(link) {
+            link = $(link);
+            if (!link.hasClass(_this.link_class_with_added_tags())) {
+              link.addClass(_this.link_class_with_added_tags());
+              return first_link != null ? first_link : first_link = link;
+            }
+          });
+          if (first_link != null) {
+            if (tags.length > 0) {
+              tag_container = _this.create_tag_container();
+              return _.each(tags, function(tag_attributes) {
+                _this.create_tag(tag_attributes['name'], tag_container);
+                return first_link.append(tag_container);
+              });
+            }
+          }
+        };
+      })(this));
+    };
+
+    TagsDisplayer.prototype.create_tag_container = function() {
+      var tag_container;
+      return tag_container = $('<span>');
+    };
+
+    TagsDisplayer.prototype.create_tag = function(name, container) {
+      var tag;
+      tag = $('<span>');
+      tag.css('display', 'inline-block inline-flex');
+      tag.css('padding', '2px 5px');
+      tag.css('margin-left', '3px');
+      tag.css('border-radius', '3px');
+      tag.css('background-color', Color.hsl_from_name(name));
+      tag.text(name);
+      return container.append(tag);
+    };
+
+    TagsDisplayer.prototype.find_urls = function(parent) {
+      var links;
+      if (parent == null) {
+        parent = $(document.body);
+      }
+      links = parent.find('a[href]');
+      return _.each(links, (function(_this) {
+        return function(link) {
+          return _this.add_link_url($(link));
+        };
+      })(this));
+    };
+
+    TagsDisplayer.prototype.add_link_url = function(link) {
+      var base, url;
+      if (link.attr('href') == null) {
+        return;
+      }
+      if (link.attr('href').length === 0) {
+        return;
+      }
+      if (link.hasClass(this.link_class_with_considered_url)) {
+        return;
+      }
+      if (link.find('img').length > 0) {
+        return;
+      }
+      link.addClass(this.link_class_with_considered_url);
+      url = link.attr('href');
+      url = MT.Url.resolve_url(url);
+      if ((base = this.links_by_url)[url] == null) {
+        base[url] = [];
+      }
+      return this.links_by_url[url].push(link);
+    };
+
+    TagsDisplayer.prototype.query_tags = function(callback) {
+      var urls;
+      if (_.keys(this.links_by_url).length === 0) {
+        return;
+      }
+      urls = _.keys(this.links_by_url);
+      urls = _.filter(urls, (function(_this) {
+        return function(url) {
+          return _this.tags_by_urls[url] == null;
+        };
+      })(this));
+      if (urls.length === 0) {
+        return;
+      }
+      urls = _.uniq(urls.sort());
+      return this.send_hosts_request(urls, callback);
+    };
+
+    TagsDisplayer.prototype.group_urls_by_host = function(urls) {
+      var url_by_hosts;
+      url_by_hosts = {};
+      _.each(urls, (function(_this) {
+        return function(url) {
+          var host;
+          host = _this.get_host_from_url(url);
+          if (url_by_hosts[host] == null) {
+            url_by_hosts[host] = [];
+          }
+          return url_by_hosts[host].push(url);
+        };
+      })(this));
+      return url_by_hosts;
+    };
+
+    TagsDisplayer.prototype.get_hosts_with_unknown_availability = function(hosts) {
+      return _.filter(hosts, (function(_this) {
+        return function(host) {
+          return _this.availabilities_by_host[host] == null;
+        };
+      })(this));
+    };
+
+    TagsDisplayer.prototype.get_host_from_url = function(url) {
+      var host, parser;
+      parser = document.createElement('a');
+      parser.href = url;
+      return host = parser.hostname;
+    };
+
+    TagsDisplayer.prototype.send_hosts_request = function(urls, callback) {
+      var hosts, url, urls_by_host;
+      console.log("send_hosts_request");
+      console.log(urls);
+      urls_by_host = this.group_urls_by_host(urls);
+      hosts = _.keys(urls_by_host);
+      hosts = this.get_hosts_with_unknown_availability(hosts);
+      console.log(hosts);
+      hosts = hosts.sort();
+      if (hosts.length > 0) {
+        url = MT.Url.wrap('/api/webpages/hosts');
+        console.log("hosts:", hosts);
+        return $.ajax({
+          method: 'POST',
+          url: url,
+          data: {
+            hosts: hosts
+          },
+          success: (function(_this) {
+            return function(data) {
+              var available_hosts;
+              available_hosts = data;
+              _.each(hosts, function(host) {
+                return _this.availabilities_by_host[host] = _.includes(available_hosts, host);
+              });
+              console.log("available_hosts: (" + available_hosts.length + ")");
+              console.log(available_hosts);
+              if ((urls = _this.potentially_available_urls(urls_by_host)).length > 0) {
+                _this.send_tags_request(urls, callback);
+              }
+              return callback();
+            };
+          })(this),
+          error: (function(_this) {
+            return function(error) {
+              console.log("error while querying hosts");
+              return console.log(error);
+            };
+          })(this)
+        });
+      } else {
+        console.log("no unknown hosts");
+        if ((urls = this.potentially_available_urls(urls_by_host)).length > 0) {
+          console.log(urls);
+          return this.send_tags_request(urls, callback);
+        } else {
+          return console.log("and no potentially_available_urls");
+        }
+      }
+    };
+
+    TagsDisplayer.prototype.potentially_available_urls = function(urls_by_host) {
+      var urls;
+      urls = [];
+      _.each(_.keys(this.availabilities_by_host), (function(_this) {
+        return function(host) {
+          if ((_this.availabilities_by_host[host] == null) || _this.availabilities_by_host[host] === true) {
+            return urls.push(urls_by_host[host]);
+          }
+        };
+      })(this));
+      return _.uniq(_.compact(_.flatten(urls)));
+    };
+
+    TagsDisplayer.prototype.send_tags_request = function(urls, callback) {
+      var url;
+      url = MT.Url.wrap('/api/webpages/tags');
+      console.log("send_tags_request", urls);
+      if (urls.length === 0) {
+        return;
+      }
+      return $.ajax({
+        method: 'POST',
+        url: url,
+        data: {
+          origin: window.location.href,
+          urls: urls
+        },
+        success: (function(_this) {
+          return function(data) {
+            console.log("data");
+            console.log(data);
+            if ((data != null) && _.keys(data).length > 0) {
+              console.log("found " + data.length + " urls with tags");
+              _.each(_.keys(data), function(url) {
+                var base;
+                console.log(url);
+                console.log(data[url]);
+                return (base = _this.tags_by_urls)[url] != null ? base[url] : base[url] = data[url];
+              });
+              console.log(_this.tags_by_urls[url]);
+            }
+            return callback();
+          };
+        })(this),
+        error: (function(_this) {
+          return function(error) {
+            console.log("error while querying tags");
+            return console.log(error);
+          };
+        })(this)
+      });
+    };
+
+    TagsDisplayer.prototype.query_user_preferences = function(callback) {
+      var url;
+      url = MT.Url.wrap('/api/preferences');
+      return $.ajax({
+        url: url,
+        success: function(data) {
+          if (data.display === true) {
+            return callback();
+          }
+        },
+        error: function(error) {
+          console.log("error while querying preferences");
+          return console.log(error);
+        }
+      });
+    };
+
+    return TagsDisplayer;
+
+  })();
+
+  if (window.full_permissions === true) {
+    $(document).ready(function() {
+      console.log("creating tags displayer");
+      return new TagsDisplayer();
+    });
+  }
 
 }).call(this);
 (function() {
@@ -13201,7 +13789,7 @@ return jQuery;
       src_list = _.keys(this.images_without_datauri_by_src);
       src = src_list[0];
       if (src != null) {
-        resolved_src = this.resolve_url(src);
+        resolved_src = MT.Url.resolve_url(src);
         this.debug(resolved_src);
         current_image_size = 0;
         return this.capturer.get_image_datauri_from_url(resolved_src, (function(_this) {
@@ -13273,7 +13861,7 @@ return jQuery;
       var stylesheet_url, urls_sorted_by_size;
       stylesheet_url = this.stylesheet_urls.shift();
       if (stylesheet_url != null) {
-        stylesheet_url = this.resolve_url(stylesheet_url);
+        stylesheet_url = MT.Url.resolve_url(stylesheet_url);
         return $.ajax({
           url: stylesheet_url,
           success: (function(_this) {
@@ -13349,30 +13937,6 @@ return jQuery;
       }
     };
 
-    WebpageImporter.prototype.resolve_url = function(url) {
-      if ((url == null) || url.length === 0) {
-        return url;
-      }
-      if (url.slice(0, 4) === 'data') {
-        return url;
-      }
-      if (url.slice(0, 4) === 'http') {
-        return url;
-      }
-      if (url.slice(0, 4) === 'chro') {
-        return url;
-      }
-      if (url.slice(0, 2) === '//') {
-        return "" + window.location.protocol + url;
-      } else {
-        if (url[0] === '/') {
-          return "" + location.origin + url;
-        } else {
-          return "" + location.href + url;
-        }
-      }
-    };
-
     WebpageImporter.prototype.convert_links = function() {
       var links;
       links = $(this.body).find('a');
@@ -13382,7 +13946,7 @@ return jQuery;
           if (link != null) {
             if ((href = link.getAttribute('href')) != null) {
               if (href.length > 0 && href.slice(0, 4) !== 'http') {
-                new_href = _this.resolve_url(href);
+                new_href = MT.Url.resolve_url(href);
                 return link.setAttribute('href', new_href);
               }
             }
@@ -13464,6 +14028,8 @@ return jQuery;
   });
 
 }).call(this);
+
+
 
 
 

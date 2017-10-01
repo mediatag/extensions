@@ -13,6 +13,7 @@ window.environment='production';
 window.server_url='https://mediatag.io';
 window.extension_browser='chrome';
 window.extension_os='desktop';
+window.full_permissions=true;
 /* GLOBALS END */
 /*!
  * jQuery JavaScript Library v3.2.1
