@@ -12307,7 +12307,7 @@ return jQuery;
         if (url[0] === '/') {
           return "" + location.origin + url;
         } else {
-          return "" + location.href + url;
+          return location.origin + "/" + url;
         }
       }
     };
