@@ -12312,6 +12312,13 @@ return jQuery;
       }
     };
 
+    Url.prototype.get_host = function(url) {
+      var host, parser;
+      parser = document.createElement('a');
+      parser.href = url;
+      return host = parser.hostname;
+    };
+
     return Url;
 
   })();
@@ -12533,325 +12540,6 @@ return jQuery;
 
 }).call(this);
 (function() {
-  var TagsDisplayer;
-
-  TagsDisplayer = (function() {
-    function TagsDisplayer() {
-      this.link_class_with_considered_url = 'mediatag_tag_link_from_content_script';
-      this.init();
-    }
-
-    TagsDisplayer.prototype.link_class_with_added_tags = function() {
-      return 'mediatag_tag_link_with_added_tags';
-    };
-
-    TagsDisplayer.prototype.init = function() {
-      console.log("init");
-      this.tags_by_urls = {};
-      this.links_by_url = {};
-      this.availabilities_by_host = {};
-      return this.query_user_preferences((function(_this) {
-        return function() {
-          _this.set_mutation_events();
-          _this.find_urls();
-          return _this.query_tags(function() {
-            return _this.display_tags();
-          });
-        };
-      })(this));
-    };
-
-    TagsDisplayer.prototype.set_mutation_events = function() {
-      var observer;
-      observer = new MutationObserver((function(_this) {
-        return function(mutations) {
-          var added_nodes;
-          added_nodes = _.uniq(_.flatten(_.map(mutations, function(mutation) {
-            return mutation.addedNodes;
-          })));
-          console.log(added_nodes.length + " new nodes");
-          _.each(added_nodes, function(added_node) {
-            added_node = $(added_node);
-            if (added_node.attr('href')) {
-              return _this.add_link_url(added_node);
-            } else {
-              return _this.find_urls(added_node);
-            }
-          });
-          return _this.query_tags(function() {
-            return _this.display_tags();
-          });
-        };
-      })(this));
-      return observer.observe(document.body, {
-        subtree: true,
-        childList: true
-      });
-    };
-
-    TagsDisplayer.prototype.display_tags = function() {
-      return _.each(_.keys(this.tags_by_urls), (function(_this) {
-        return function(url) {
-          var first_link, links, tag_container, tags;
-          links = _this.links_by_url[url];
-          tags = _this.tags_by_urls[url];
-          first_link = null;
-          _.each(links, function(link) {
-            link = $(link);
-            if (!link.hasClass(_this.link_class_with_added_tags())) {
-              link.addClass(_this.link_class_with_added_tags());
-              return first_link != null ? first_link : first_link = link;
-            }
-          });
-          if (first_link != null) {
-            if (tags.length > 0) {
-              tag_container = _this.create_tag_container();
-              return _.each(tags, function(tag_attributes) {
-                _this.create_tag(tag_attributes['name'], tag_container);
-                return first_link.append(tag_container);
-              });
-            }
-          }
-        };
-      })(this));
-    };
-
-    TagsDisplayer.prototype.create_tag_container = function() {
-      var tag_container;
-      return tag_container = $('<span>');
-    };
-
-    TagsDisplayer.prototype.create_tag = function(name, container) {
-      var tag;
-      tag = $('<span>');
-      tag.css('display', 'inline-block inline-flex');
-      tag.css('padding', '2px 5px');
-      tag.css('margin-left', '3px');
-      tag.css('border-radius', '3px');
-      tag.css('background-color', Color.hsl_from_name(name));
-      tag.text(name);
-      return container.append(tag);
-    };
-
-    TagsDisplayer.prototype.find_urls = function(parent) {
-      var links;
-      if (parent == null) {
-        parent = $(document.body);
-      }
-      links = parent.find('a[href]');
-      return _.each(links, (function(_this) {
-        return function(link) {
-          return _this.add_link_url($(link));
-        };
-      })(this));
-    };
-
-    TagsDisplayer.prototype.add_link_url = function(link) {
-      var base, url;
-      if (link.attr('href') == null) {
-        return;
-      }
-      if (link.attr('href').length === 0) {
-        return;
-      }
-      if (link.hasClass(this.link_class_with_considered_url)) {
-        return;
-      }
-      if (link.find('img').length > 0) {
-        return;
-      }
-      link.addClass(this.link_class_with_considered_url);
-      url = link.attr('href');
-      url = MT.Url.resolve_url(url);
-      if ((base = this.links_by_url)[url] == null) {
-        base[url] = [];
-      }
-      return this.links_by_url[url].push(link);
-    };
-
-    TagsDisplayer.prototype.query_tags = function(callback) {
-      var urls;
-      if (_.keys(this.links_by_url).length === 0) {
-        return;
-      }
-      urls = _.keys(this.links_by_url);
-      urls = _.filter(urls, (function(_this) {
-        return function(url) {
-          return _this.tags_by_urls[url] == null;
-        };
-      })(this));
-      if (urls.length === 0) {
-        return;
-      }
-      urls = _.uniq(urls.sort());
-      return this.send_hosts_request(urls, callback);
-    };
-
-    TagsDisplayer.prototype.group_urls_by_host = function(urls) {
-      var url_by_hosts;
-      url_by_hosts = {};
-      _.each(urls, (function(_this) {
-        return function(url) {
-          var host;
-          host = _this.get_host_from_url(url);
-          if (url_by_hosts[host] == null) {
-            url_by_hosts[host] = [];
-          }
-          return url_by_hosts[host].push(url);
-        };
-      })(this));
-      return url_by_hosts;
-    };
-
-    TagsDisplayer.prototype.get_hosts_with_unknown_availability = function(hosts) {
-      return _.filter(hosts, (function(_this) {
-        return function(host) {
-          return _this.availabilities_by_host[host] == null;
-        };
-      })(this));
-    };
-
-    TagsDisplayer.prototype.get_host_from_url = function(url) {
-      var host, parser;
-      parser = document.createElement('a');
-      parser.href = url;
-      return host = parser.hostname;
-    };
-
-    TagsDisplayer.prototype.send_hosts_request = function(urls, callback) {
-      var hosts, url, urls_by_host;
-      console.log("send_hosts_request");
-      console.log(urls);
-      urls_by_host = this.group_urls_by_host(urls);
-      hosts = _.keys(urls_by_host);
-      hosts = this.get_hosts_with_unknown_availability(hosts);
-      console.log(hosts);
-      hosts = hosts.sort();
-      if (hosts.length > 0) {
-        url = MT.Url.wrap('/api/webpages/hosts');
-        console.log("hosts:", hosts);
-        return $.ajax({
-          method: 'POST',
-          url: url,
-          data: {
-            hosts: hosts
-          },
-          success: (function(_this) {
-            return function(data) {
-              var available_hosts;
-              available_hosts = data;
-              _.each(hosts, function(host) {
-                return _this.availabilities_by_host[host] = _.includes(available_hosts, host);
-              });
-              console.log("available_hosts: (" + available_hosts.length + ")");
-              console.log(available_hosts);
-              if ((urls = _this.potentially_available_urls(urls_by_host)).length > 0) {
-                _this.send_tags_request(urls, callback);
-              }
-              return callback();
-            };
-          })(this),
-          error: (function(_this) {
-            return function(error) {
-              console.log("error while querying hosts");
-              return console.log(error);
-            };
-          })(this)
-        });
-      } else {
-        console.log("no unknown hosts");
-        if ((urls = this.potentially_available_urls(urls_by_host)).length > 0) {
-          console.log(urls);
-          return this.send_tags_request(urls, callback);
-        } else {
-          return console.log("and no potentially_available_urls");
-        }
-      }
-    };
-
-    TagsDisplayer.prototype.potentially_available_urls = function(urls_by_host) {
-      var urls;
-      urls = [];
-      _.each(_.keys(this.availabilities_by_host), (function(_this) {
-        return function(host) {
-          if ((_this.availabilities_by_host[host] == null) || _this.availabilities_by_host[host] === true) {
-            return urls.push(urls_by_host[host]);
-          }
-        };
-      })(this));
-      return _.uniq(_.compact(_.flatten(urls)));
-    };
-
-    TagsDisplayer.prototype.send_tags_request = function(urls, callback) {
-      var url;
-      url = MT.Url.wrap('/api/webpages/tags');
-      console.log("send_tags_request", urls);
-      if (urls.length === 0) {
-        return;
-      }
-      return $.ajax({
-        method: 'POST',
-        url: url,
-        data: {
-          origin: window.location.href,
-          urls: urls
-        },
-        success: (function(_this) {
-          return function(data) {
-            console.log("data");
-            console.log(data);
-            if ((data != null) && _.keys(data).length > 0) {
-              console.log("found " + data.length + " urls with tags");
-              _.each(_.keys(data), function(url) {
-                var base;
-                console.log(url);
-                console.log(data[url]);
-                return (base = _this.tags_by_urls)[url] != null ? base[url] : base[url] = data[url];
-              });
-              console.log(_this.tags_by_urls[url]);
-            }
-            return callback();
-          };
-        })(this),
-        error: (function(_this) {
-          return function(error) {
-            console.log("error while querying tags");
-            return console.log(error);
-          };
-        })(this)
-      });
-    };
-
-    TagsDisplayer.prototype.query_user_preferences = function(callback) {
-      var url;
-      url = MT.Url.wrap('/api/preferences');
-      return $.ajax({
-        url: url,
-        success: function(data) {
-          if (data.display === true) {
-            return callback();
-          }
-        },
-        error: function(error) {
-          console.log("error while querying preferences");
-          return console.log(error);
-        }
-      });
-    };
-
-    return TagsDisplayer;
-
-  })();
-
-  if (window.full_permissions === true) {
-    $(document).ready(function() {
-      console.log("creating tags displayer");
-      return new TagsDisplayer();
-    });
-  }
-
-}).call(this);
-(function() {
   var WindowManager,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -12913,6 +12601,564 @@ return jQuery;
 
   namespace("MT.Manager.ContentScript", function(e) {
     return e.Window != null ? e.Window : e.Window = new WindowManager();
+  });
+
+}).call(this);
+(function() {
+  var Displayer;
+
+  Displayer = (function() {
+    function Displayer() {
+      var classes_to_ignore, link_class_with_added_tags, link_class_with_considered_url, tag_class, tag_container_class;
+      link_class_with_added_tags = 'mediatag_tag_link_with_added_tags';
+      link_class_with_considered_url = 'mediatag_tag_link_from_content_script';
+      tag_class = 'mediatag_tag_class';
+      tag_container_class = 'mediatag_tag_container_class';
+      this.display_tags_user_allowed = false;
+      this.requests_controller = new MT.Manager.ContentScript.Tags.RequestsController();
+      this.dom_controller = new MT.Manager.ContentScript.Tags.DomController(link_class_with_added_tags, link_class_with_considered_url, tag_class, tag_container_class);
+      this.urls_controller = new MT.Manager.ContentScript.Tags.UrlsController();
+      classes_to_ignore = [tag_container_class, tag_class];
+      this.events_controller = new MT.Manager.ContentScript.Tags.EventsController(classes_to_ignore, (function(_this) {
+        return function() {
+          return _this.check_pending_nodes();
+        };
+      })(this));
+      this.init();
+    }
+
+    Displayer.prototype.init = function() {
+      this.tags_by_urls = {};
+      this.availabilities_by_host = {};
+      return this.requests_controller.query_user_preferences((function(_this) {
+        return function() {
+          _this.display_tags_user_allowed = true;
+          return _this.perform();
+        };
+      })(this));
+    };
+
+    Displayer.prototype.perform = function() {
+      if (this.display_tags_user_allowed === false) {
+        return;
+      }
+      return this.query_hosts();
+    };
+
+    Displayer.prototype.query_hosts = function() {
+      var unfetched_hosts, urls;
+      urls = this.dom_controller.unprocessed_urls();
+      this.dom_controller.set_urls_processed(urls);
+      this.urls_controller.add_urls(urls);
+      unfetched_hosts = this.urls_controller.unfetched_hosts();
+      if (unfetched_hosts.length > 0) {
+        return this.requests_controller.get_available_hosts(unfetched_hosts, (function(_this) {
+          return function(available_hosts) {
+            _this.process_available_hosts(unfetched_hosts, available_hosts);
+            return _this.query_tags();
+          };
+        })(this));
+      } else {
+        return this.query_tags();
+      }
+    };
+
+    Displayer.prototype.query_tags = function() {
+      var unfetched_urls;
+      unfetched_urls = this.urls_controller.unfetched_and_available_urls();
+      return this.requests_controller.get_urls_tags(unfetched_urls, (function(_this) {
+        return function(tags_by_url) {
+          _.each(_.keys(tags_by_url), function(url) {
+            var tags;
+            tags = tags_by_url[url];
+            return _this.urls_controller.add_tags_for_url(url, tags);
+          });
+          _this.dom_controller.add_tags(_this.urls_controller.get_tags_by_url());
+          return _this.check_pending_nodes();
+        };
+      })(this));
+    };
+
+    Displayer.prototype.process_available_hosts = function(unfetched_hosts, available_hosts) {
+      return _.each(unfetched_hosts, (function(_this) {
+        return function(host) {
+          var available;
+          available = _.includes(available_hosts, host);
+          return _this.urls_controller.set_hosts_availability(host, available);
+        };
+      })(this));
+    };
+
+    Displayer.prototype.check_pending_nodes = function() {
+      var pending_nodes;
+      if (this.display_tags_user_allowed === false) {
+        return;
+      }
+      if (this.requests_controller.in_progress()) {
+        return;
+      }
+      pending_nodes = this.events_controller.get_pending_nodes();
+      if (pending_nodes.length > 0) {
+        this.events_controller.set_clean();
+        _.each(pending_nodes, (function(_this) {
+          return function(pending_node) {
+            return _this.dom_controller.find_urls(pending_node);
+          };
+        })(this));
+        if (this.dom_controller.unprocessed_urls().length > 0) {
+          return this.query_hosts();
+        }
+      }
+    };
+
+    return Displayer;
+
+  })();
+
+  if (window.full_permissions === true) {
+    $(document).ready(function() {
+      return new Displayer();
+    });
+  }
+
+}).call(this);
+(function() {
+  var DomController;
+
+  DomController = (function() {
+    function DomController(link_class_with_added_tags, link_class_with_considered_url, tag_class, tag_container_class) {
+      this.link_class_with_added_tags = link_class_with_added_tags;
+      this.link_class_with_considered_url = link_class_with_considered_url;
+      this.tag_class = tag_class;
+      this.tag_container_class = tag_container_class;
+      this.links_by_url = {};
+      this.tags_by_urls = {};
+      this.processed_state_by_url = {};
+      this.find_urls(document.body);
+    }
+
+    DomController.prototype.found_urls = function() {
+      return _.keys(this.links_by_url);
+    };
+
+    DomController.prototype.find_urls = function(parent) {
+      var links;
+      links = $(parent).find('a[href]');
+      return _.each(links, (function(_this) {
+        return function(link) {
+          return _this.add_link_url($(link));
+        };
+      })(this));
+    };
+
+    DomController.prototype.set_urls_processed = function(urls) {
+      return _.each(urls, (function(_this) {
+        return function(url) {
+          return _this.processed_state_by_url[url] = true;
+        };
+      })(this));
+    };
+
+    DomController.prototype.unprocessed_urls = function() {
+      var urls;
+      urls = [];
+      return _.select(_.keys(this.processed_state_by_url), (function(_this) {
+        return function(url) {
+          return _this.processed_state_by_url[url] !== true;
+        };
+      })(this));
+    };
+
+    DomController.prototype.add_link_url = function(link) {
+      var base, url;
+      if (link.attr('href') == null) {
+        return;
+      }
+      if (link.attr('href').length === 0) {
+        return;
+      }
+      if (link.hasClass(this.link_class_with_considered_url)) {
+        return;
+      }
+      if (link.find('img').length > 0) {
+        return;
+      }
+      link.addClass(this.link_class_with_considered_url);
+      url = link.attr('href');
+      url = MT.Url.resolve_url(url);
+      if (this.processed_state_by_url[url] == null) {
+        this.processed_state_by_url[url] = false;
+        if ((base = this.links_by_url)[url] == null) {
+          base[url] = [];
+        }
+        return this.links_by_url[url].push(link);
+      }
+    };
+
+    DomController.prototype.add_tags = function(tags_by_url) {
+      return _.each(_.keys(tags_by_url), (function(_this) {
+        return function(url) {
+          var tags;
+          tags = tags_by_url[url];
+          return _this.add_tags_for_url(url, tags);
+        };
+      })(this));
+    };
+
+    DomController.prototype.add_tags_for_url = function(url, tags) {
+      var first_link, links, tag_container, tag_names;
+      if (tags == null) {
+        return;
+      }
+      if (tags.length === 0) {
+        return;
+      }
+      tag_names = _.map(tags, function(tag) {
+        return tag.name;
+      });
+      if (tag_names.length === 0) {
+        return;
+      }
+      links = this.links_by_url[url];
+      if (links == null) {
+        return;
+      }
+      first_link = null;
+      _.each(links, (function(_this) {
+        return function(link) {
+          if (!link.hasClass(_this.link_class_with_added_tags)) {
+            link.addClass(_this.link_class_with_added_tags);
+            return first_link != null ? first_link : first_link = link;
+          }
+        };
+      })(this));
+      if (first_link != null) {
+        tag_container = this.create_tag_container();
+        $(first_link).append(tag_container);
+        return _.each(tag_names, (function(_this) {
+          return function(tag_name) {
+            return tag_container.append(_this.create_tag(tag_name));
+          };
+        })(this));
+      }
+    };
+
+    DomController.prototype.create_tag_container = function() {
+      var tag_container;
+      tag_container = $('<span>');
+      tag_container.addClass(this.tag_container_class);
+      return tag_container;
+    };
+
+    DomController.prototype.create_tag = function(name) {
+      var tag;
+      tag = $('<span>');
+      tag.addClass(this.tag_class);
+      tag.css('display', 'inline-block inline-flex');
+      tag.css('padding', '2px 5px');
+      tag.css('margin-left', '3px');
+      tag.css('border-radius', '3px');
+      tag.css('background-color', Color.hsl_from_name(name));
+      tag.text(name);
+      return tag;
+    };
+
+    return DomController;
+
+  })();
+
+  namespace("MT.Manager.ContentScript.Tags", function(e) {
+    return e.DomController = DomController;
+  });
+
+}).call(this);
+(function() {
+  var EventsController;
+
+  EventsController = (function() {
+    function EventsController(classes_to_ignore, callback) {
+      this.classes_to_ignore = classes_to_ignore;
+      this.callback = callback;
+      this.pending_nodes = [];
+      this.dirty = false;
+      this.set_mutation_events();
+    }
+
+    EventsController.prototype.is_dirty = function() {
+      return this.dirty;
+    };
+
+    EventsController.prototype.get_pending_nodes = function() {
+      return this.pending_nodes;
+    };
+
+    EventsController.prototype.set_clean = function() {
+      this.pending_nodes = [];
+      return this.dirty = false;
+    };
+
+    EventsController.prototype.set_mutation_events = function() {
+      var observer;
+      observer = new MutationObserver((function(_this) {
+        return function(mutations) {
+          var added_nodes;
+          added_nodes = _.uniq(_.flatten(_.map(mutations, function(mutation) {
+            return mutation.addedNodes;
+          })));
+          if (added_nodes.length > 0) {
+            added_nodes = _.filter(added_nodes, function(added_node) {
+              var is_a_tag_added_by_content_script;
+              is_a_tag_added_by_content_script = false;
+              _.each(_this.classes_to_ignore, function(class_to_ignore) {
+                if ($(added_node).hasClass(class_to_ignore)) {
+                  return is_a_tag_added_by_content_script = true;
+                }
+              });
+              return !is_a_tag_added_by_content_script;
+            });
+            if (added_nodes.length > 0) {
+              _.each(added_nodes, function(added_node) {
+                return _this.pending_nodes.push(added_node);
+              });
+              _this.dirty = true;
+              return _this.callback();
+            }
+          }
+        };
+      })(this));
+      return observer.observe(document.body, {
+        subtree: true,
+        childList: true
+      });
+    };
+
+    return EventsController;
+
+  })();
+
+  namespace("MT.Manager.ContentScript.Tags", function(e) {
+    return e.EventsController = EventsController;
+  });
+
+}).call(this);
+(function() {
+  var RequestsController;
+
+  RequestsController = (function() {
+    function RequestsController() {}
+
+    RequestsController.prototype.contructor = function() {
+      return this.request_in_progress = false;
+    };
+
+    RequestsController.prototype.in_progress = function() {
+      return this.request_in_progress === true;
+    };
+
+    RequestsController.prototype.get_available_hosts = function(unfetched_hosts, callback) {
+      var url;
+      unfetched_hosts = unfetched_hosts.sort();
+      if (unfetched_hosts.length > 0) {
+        url = MT.Url.wrap('/api/webpages/hosts');
+        this.request_in_progress = true;
+        return $.ajax({
+          method: 'POST',
+          url: url,
+          data: {
+            hosts: unfetched_hosts
+          },
+          success: (function(_this) {
+            return function(data) {
+              var available_hosts;
+              _this.request_in_progress = false;
+              available_hosts = data;
+              return callback(available_hosts);
+            };
+          })(this),
+          error: (function(_this) {
+            return function(error) {
+              _this.request_in_progress = false;
+              console.log("error while querying hosts");
+              return console.log(error);
+            };
+          })(this)
+        });
+      } else {
+        return callback([]);
+      }
+    };
+
+    RequestsController.prototype.get_urls_tags = function(urls, callback) {
+      var url;
+      url = MT.Url.wrap('/api/webpages/tags');
+      if (urls.length > 0) {
+        this.request_in_progress = true;
+        return $.ajax({
+          method: 'POST',
+          url: url,
+          data: {
+            origin: window.location.href,
+            urls: urls
+          },
+          success: (function(_this) {
+            return function(data) {
+              var tags_by_url;
+              tags_by_url = data;
+              _this.request_in_progress = false;
+              return callback(tags_by_url);
+            };
+          })(this),
+          error: (function(_this) {
+            return function(error) {
+              _this.request_in_progress = false;
+              console.log("error while querying tags");
+              return console.log(error);
+            };
+          })(this)
+        });
+      } else {
+        return callback();
+      }
+    };
+
+    RequestsController.prototype.query_user_preferences = function(callback) {
+      var url;
+      url = MT.Url.wrap('/api/preferences');
+      return $.ajax({
+        url: url,
+        success: function(data) {
+          if (data.display === true) {
+            return callback();
+          }
+        },
+        error: function(error) {
+          console.log("error while querying preferences");
+          return console.log(error);
+        }
+      });
+    };
+
+    return RequestsController;
+
+  })();
+
+  namespace("MT.Manager.ContentScript.Tags", function(e) {
+    return e.RequestsController = RequestsController;
+  });
+
+}).call(this);
+(function() {
+  var UrlsController;
+
+  UrlsController = (function() {
+    function UrlsController() {
+      this.availabilities_by_host = {};
+      this.tags_by_urls = {};
+      this.urls_by_host = {};
+      this.hosts_by_url = {};
+    }
+
+    UrlsController.prototype.add_urls = function(urls) {
+      return _.each(urls, (function(_this) {
+        return function(url) {
+          var base, host;
+          if (_this.hosts_by_url[url] == null) {
+            host = MT.Url.get_host(url);
+            _this.hosts_by_url[url] = host;
+            if ((base = _this.urls_by_host)[host] == null) {
+              base[host] = [];
+            }
+            return _this.urls_by_host[host].push(url);
+          }
+        };
+      })(this));
+    };
+
+    UrlsController.prototype.add_tags_for_url = function(url, tags) {
+      return this.tags_by_urls[url] = tags;
+    };
+
+    UrlsController.prototype.get_tags_by_url = function() {
+      return this.tags_by_urls;
+    };
+
+    UrlsController.prototype.unfetched_urls = function(urls) {
+      if (urls.length === 0) {
+        return;
+      }
+      urls = _.filter(urls, (function(_this) {
+        return function(url) {
+          return _this.tags_by_urls[url] == null;
+        };
+      })(this));
+      if (urls.length === 0) {
+        return;
+      }
+      return urls = _.uniq(urls.sort());
+    };
+
+    UrlsController.prototype.unfetched_and_available_urls = function() {
+      var hosts, list;
+      list = [];
+      hosts = _.keys(this.urls_by_host);
+      _.each(hosts, (function(_this) {
+        return function(host) {
+          var host_urls;
+          host_urls = _this.urls_by_host[host];
+          if (_this.is_host_unfetched(host)) {
+            return list.push(host_urls);
+          } else {
+            if (_this.is_host_available(host)) {
+              return _.each(host_urls, function(url) {
+                if (_this.is_url_unfetched(url)) {
+                  return list.push(url);
+                }
+              });
+            }
+          }
+        };
+      })(this));
+      return list;
+    };
+
+    UrlsController.prototype.unfetched_hosts = function() {
+      var hosts;
+      hosts = _.keys(this.urls_by_host);
+      return _.filter(hosts, (function(_this) {
+        return function(host) {
+          return _this.is_host_unfetched(host);
+        };
+      })(this));
+    };
+
+    UrlsController.prototype.set_hosts_availability = function(host, available) {
+      return this.availabilities_by_host[host] = available;
+    };
+
+    UrlsController.prototype.is_host_unfetched = function(host) {
+      return this.availabilities_by_host[host] == null;
+    };
+
+    UrlsController.prototype.is_host_available = function(host) {
+      return this.availabilities_by_host[host] === true;
+    };
+
+    UrlsController.prototype.is_url_unfetched = function(url) {
+      return this.tags_by_urls[url] == null;
+    };
+
+    UrlsController.prototype.is_url_host_available = function(url) {
+      var host;
+      host = this.hosts_by_url[url] || MT.Url.get_host(url);
+      return this.is_host_available(host);
+    };
+
+    return UrlsController;
+
+  })();
+
+  namespace("MT.Manager.ContentScript.Tags", function(e) {
+    return e.UrlsController = UrlsController;
   });
 
 }).call(this);
@@ -14041,6 +14287,10 @@ return jQuery;
   });
 
 }).call(this);
+
+
+
+
 
 
 
