@@ -11874,7 +11874,7 @@ return jQuery;
           console.log(url);
         }
         if (!self.delay_ellapsed) {
-          return callback(datauri);
+          return callback(datauri, this);
         }
       };
       image.onerror = function() {

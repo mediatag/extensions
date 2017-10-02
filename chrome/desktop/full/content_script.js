@@ -11874,7 +11874,7 @@ return jQuery;
           console.log(url);
         }
         if (!self.delay_ellapsed) {
-          return callback(datauri);
+          return callback(datauri, this);
         }
       };
       image.onerror = function() {
@@ -12204,6 +12204,20 @@ return jQuery;
         })(this);
         return this.image.src = this.data;
       }
+    };
+
+    ImageHandler.prototype.resize = function(width, height, callback) {
+      var image;
+      image = new Image();
+      image.onload = function() {
+        var canvas;
+        canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+        return callback(canvas.toDataURL());
+      };
+      return image.src = this.data;
     };
 
     ImageHandler.prototype.image_to_data = function(crop_options) {
@@ -12966,10 +12980,10 @@ return jQuery;
       var base_capturer;
       base_capturer = new MT.Capturer();
       return base_capturer.get_image_datauri_from_url(url, (function(_this) {
-        return function(datauri) {
+        return function(datauri, image) {
           var message_options;
           if (datauri != null) {
-            return callback(datauri);
+            return callback(datauri, image);
           } else {
             if (typeof chrome === "undefined" || chrome === null) {
               return callback();
@@ -13649,6 +13663,7 @@ return jQuery;
 }).call(this);
 (function() {
   var WebpageImporter,
+    bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
@@ -13657,6 +13672,7 @@ return jQuery;
 
     function WebpageImporter(data1) {
       this.data = data1;
+      this.finalize_src = bind(this.finalize_src, this);
       WebpageImporter.__super__.constructor.apply(this, arguments);
       this.capturer = new MT.Extension.ContentScript.Capturer();
       this.webpage_url = this.data.tab.url;
@@ -13667,7 +13683,9 @@ return jQuery;
       this.url = MT.Url.wrap(MT.routes.extension_imports_webpage_path);
     }
 
-    WebpageImporter.prototype.debug = function(message) {};
+    WebpageImporter.prototype.debug = function(message) {
+      return console.log(message);
+    };
 
     WebpageImporter.prototype.prepare_html = function(callback) {
       return this.get_visible_area_datauri((function(_this) {
@@ -13728,26 +13746,26 @@ return jQuery;
     WebpageImporter.prototype.find_images_to_convert_to_datauri = function(callback) {
       var all_images, images_found;
       this.debug("==== IMAGES");
+      this.images_dimensions_by_data_attr = {};
       all_images = $(this.body).find('img');
       _.each(all_images, (function(_this) {
         return function(img) {
-          var background_image, base, base1, bg_src, height, is_visible, min_dim, original_image, src, style, width;
+          var background_image, bg_src, height, is_visible, min_dim, original_image, src, style, width;
           original_image = _this.original_image(img);
-          width = original_image.width();
-          height = original_image.height();
+          width = Math.floor(original_image.width());
+          height = Math.floor(original_image.height());
           is_visible = original_image.is(":visible");
           min_dim = 0;
           if (width > min_dim && height > min_dim && is_visible) {
             img = $(img);
             src = img.attr('src');
-            _this.debug("image w:" + width + ", h:" + height + " - " + src);
+            img[0].style.width = width + "px";
+            img[0].style.height = height + "px";
+            img[0].dataset['mediatagWidth'] = width;
+            img[0].dataset['mediatagHeight'] = height;
             if (src != null) {
-              _this.debug("has src");
               if (src.slice(0, 5) !== 'data:') {
-                if ((base = _this.images_without_datauri_by_src)[src] == null) {
-                  base[src] = [];
-                }
-                return _this.images_without_datauri_by_src[src].push(img);
+                return _this.add_image(src, img[0], width, height);
               } else {
 
               }
@@ -13756,24 +13774,16 @@ return jQuery;
               bg_src = style.backgroundImage;
               if (bg_src.slice(0, 3) === "url") {
                 bg_src = bg_src.replace(/url\(|\)|'|"/g, "");
-                if ((base1 = _this.images_without_datauri_by_src)[bg_src] == null) {
-                  base1[bg_src] = [];
-                }
-                _this.images_without_datauri_by_src[bg_src].push(img);
+                return _this.add_image(bg_src, img[0], width, height);
               } else {
                 if (background_image = img.css('background-image')) {
-                  _this.debug("has no url, using background image");
-                  _this.debug(img);
                   img[0].style.backgroundImage = background_image;
-                  _this.debug(img[0].style.backgroundImage);
+                  return _this.debug(img[0].style.backgroundImage);
                 }
               }
-              img[0].style.width = (Math.floor(width)) + "px";
-              img[0].style.height = (Math.floor(height)) + "px";
-              return _this.debug([width, height]);
             }
           } else {
-            return _this.debug("image not visible or less than " + min_dim + ", skipped");
+
           }
         };
       })(this));
@@ -13782,6 +13792,17 @@ return jQuery;
       this.images_datauri_size = 0;
       this.images_src_by_size = {};
       return this.convert_next_image_to_datauri(callback);
+    };
+
+    WebpageImporter.prototype.add_image = function(src, img, width, height) {
+      var base, data_id;
+      if ((base = this.images_without_datauri_by_src)[src] == null) {
+        base[src] = [];
+      }
+      this.images_without_datauri_by_src[src].push(img);
+      img.dataset['mediatagOriginalUrl'] = MT.Url.resolve_url(src);
+      data_id = this.image_data_id(img);
+      return this.images_dimensions_by_data_attr[data_id] = [width, height];
     };
 
     WebpageImporter.prototype.convert_next_image_to_datauri = function(callback) {
@@ -13794,28 +13815,25 @@ return jQuery;
         current_image_size = 0;
         return this.capturer.get_image_datauri_from_url(resolved_src, (function(_this) {
           return function(datauri) {
-            var base, images;
+            var images;
             images = _this.images_without_datauri_by_src[src];
+            console.log(images);
             if (datauri != null) {
               _this.debug("adding " + datauri.length + " to " + images.length + " images (total: " + (images.length * datauri.length) + ")");
-            }
-            _.each(images, function(image) {
-              if (datauri != null) {
-                image.attr('src', datauri);
+              console.log(_this.images_dimensions_by_data_attr);
+              _.each(images, function(image) {
+                $(image).attr('src', datauri);
                 _this.images_datauri_size += datauri.length;
                 current_image_size += datauri.length;
                 return _this.debug(_this.images_datauri_size);
-              } else {
-                return image[0].dataset['mediatagUrlToFetch'] = resolved_src;
-              }
-            });
-            current_image_size;
-            if ((base = _this.images_src_by_size)[current_image_size] == null) {
-              base[current_image_size] = [];
+              });
+              return _this.finalize_src(src, resolved_src, current_image_size, callback);
+            } else {
+              _.each(images, function(image) {
+                return image.dataset['mediatagUrlToFetch'] = resolved_src;
+              });
+              return _this.finalize_src(src, resolved_src, current_image_size, callback);
             }
-            _this.images_src_by_size[current_image_size].push(resolved_src);
-            delete _this.images_without_datauri_by_src[src];
-            return _this.convert_next_image_to_datauri(callback);
           };
         })(this));
       } else {
@@ -13831,6 +13849,16 @@ return jQuery;
         this.debug("=== DONE IMAGES");
         return callback();
       }
+    };
+
+    WebpageImporter.prototype.finalize_src = function(src, resolved_src, current_image_size, callback) {
+      var base;
+      if ((base = this.images_src_by_size)[current_image_size] == null) {
+        base[current_image_size] = [];
+      }
+      this.images_src_by_size[current_image_size].push(resolved_src);
+      delete this.images_without_datauri_by_src[src];
+      return this.convert_next_image_to_datauri(callback);
     };
 
     WebpageImporter.prototype.embed_css = function(callback) {
@@ -13979,25 +14007,6 @@ return jQuery;
       return this.debug("removed " + cmptr + " script tags");
     };
 
-    WebpageImporter.prototype.fix_duplicate_ids = function() {
-      var self;
-      this.elements_to_revert_id = [];
-      self = this;
-      return $('[id]').each(function() {
-        var cmptr, ids;
-        ids = $('[id="' + this.id + '"]');
-        if (ids.length > 1 && ids[0] === this) {
-          cmptr = 0;
-          return ids.each(function() {
-            self.elements_to_revert_id.push(this);
-            this.dataset['oldId'] = this.id;
-            this.id = this.id + "_____________" + cmptr;
-            return cmptr += 1;
-          });
-        }
-      });
-    };
-
     WebpageImporter.prototype.clone_html = function() {
       this.add_data_attributes();
       this.body = document.body.cloneNode(true);
@@ -14012,10 +14021,14 @@ return jQuery;
       });
     };
 
+    WebpageImporter.prototype.image_data_id = function(img) {
+      var data_id;
+      return data_id = img.dataset['mediatagCopyImageId'];
+    };
+
     WebpageImporter.prototype.original_image = function(img) {
       var copy_id, original_img;
-      copy_id = img.dataset['mediatagCopyImageId'];
-      this.debug(copy_id);
+      copy_id = this.image_data_id(img);
       return original_img = $("img[data-mediatag-copy-image-id=" + copy_id + "]");
     };
 
