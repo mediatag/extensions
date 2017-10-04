@@ -14,6 +14,7 @@ window.server_url='https://mediatag.io';
 window.extension_browser='firefox';
 window.extension_os='desktop';
 window.full_permissions=true;
+window.tags_display_allowed=true;
 /* GLOBALS END */
 /*!
  * jQuery JavaScript Library v3.2.1
