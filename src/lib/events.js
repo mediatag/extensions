@@ -1,0 +1,13 @@
+(function() {
+  if (window.MT == null) {
+    window.MT = {};
+  }
+
+  window.MT.EVENTS = {
+    SCREENSHOT_REQUESTED: "SCREENSHOT_REQUESTED",
+    SCREENSHOT_COMPLETED: "SCREENSHOT_COMPLETED",
+    SCREENSHOT_ERROR: "SCREENSHOT_ERROR",
+    IMPORT_MEDIUM_OR_WEBPAGE: "IMPORT_MEDIUM_OR_WEBPAGE"
+  };
+
+}).call(this);
