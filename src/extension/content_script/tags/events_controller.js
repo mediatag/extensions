@@ -25,37 +25,41 @@
 
     EventsController.prototype.set_mutation_events = function() {
       var observer;
-      observer = new MutationObserver((function(_this) {
-        return function(mutations) {
-          var added_nodes;
-          added_nodes = _.uniq(_.flatten(_.map(mutations, function(mutation) {
-            return mutation.addedNodes;
-          })));
-          if (added_nodes.length > 0) {
-            added_nodes = _.filter(added_nodes, function(added_node) {
-              var is_a_tag_added_by_content_script;
-              is_a_tag_added_by_content_script = false;
-              _.each(_this.classes_to_ignore, function(class_to_ignore) {
-                if ($(added_node).hasClass(class_to_ignore)) {
-                  return is_a_tag_added_by_content_script = true;
-                }
-              });
-              return !is_a_tag_added_by_content_script;
-            });
+      if (typeof MutationObserver !== "undefined" && MutationObserver !== null) {
+        observer = new MutationObserver((function(_this) {
+          return function(mutations) {
+            var added_nodes;
+            added_nodes = _.uniq(_.flatten(_.map(mutations, function(mutation) {
+              return mutation.addedNodes;
+            })));
             if (added_nodes.length > 0) {
-              _.each(added_nodes, function(added_node) {
-                return _this.pending_nodes.push(added_node);
+              added_nodes = _.filter(added_nodes, function(added_node) {
+                var is_a_tag_added_by_content_script;
+                is_a_tag_added_by_content_script = false;
+                _.each(_this.classes_to_ignore, function(class_to_ignore) {
+                  if ($(added_node).hasClass(class_to_ignore)) {
+                    return is_a_tag_added_by_content_script = true;
+                  }
+                });
+                return !is_a_tag_added_by_content_script;
               });
-              _this.dirty = true;
-              return _this.callback();
+              if (added_nodes.length > 0) {
+                _.each(added_nodes, function(added_node) {
+                  return _this.pending_nodes.push(added_node);
+                });
+                _this.dirty = true;
+                return _this.callback();
+              }
             }
-          }
-        };
-      })(this));
-      return observer.observe(document.body, {
-        subtree: true,
-        childList: true
-      });
+          };
+        })(this));
+        return observer.observe(document.body, {
+          subtree: true,
+          childList: true
+        });
+      } else {
+        return console.log("MutationObserver not defined");
+      }
     };
 
     return EventsController;
