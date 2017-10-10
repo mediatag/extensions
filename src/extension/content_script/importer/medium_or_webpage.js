@@ -23,7 +23,7 @@
     }
 
     MediumOrWebpageImporter.prototype.is_medium_page = function(callback) {
-      var response, service_finder, url;
+      var request, response, service_finder, url;
       if (window.environment === 'development' && (this.url.indexOf('tests/extension_import_medium') > 0)) {
         return callback(true);
       } else {
@@ -32,14 +32,18 @@
           return callback(response['valid'], response['name']);
         } else {
           url = MT.Url.wrap("/api/media/is_url_valid?url=" + this.url);
-          return $.getJSON(url).then((function(_this) {
-            return function(data) {
-              var service_name, status;
+          request = new XMLHttpRequest();
+          request.open("get", url, true);
+          request.onload = (function(_this) {
+            return function(event) {
+              var data, service_name, status;
+              data = JSON.parse(request.response);
               status = data['valid'];
               service_name = data['service'];
               return callback(data['valid'], service_name);
             };
-          })(this));
+          })(this);
+          return request.send();
         }
       }
     };

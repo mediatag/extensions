@@ -4,11 +4,12 @@
   BaseImporter = (function() {
     function BaseImporter(data1) {
       this.data = data1;
+      this.resize_allowed = false;
       this.is_mounted = true;
     }
 
     BaseImporter.prototype.container_parent = function() {
-      return $('body');
+      return document.body;
     };
 
     BaseImporter.prototype.iframe_css_position = function() {
@@ -25,48 +26,48 @@
 
     BaseImporter.prototype.build_iframe_container_and_loader = function() {
       var container_parent, image, label, progress_bar, stylesheet;
-      stylesheet = $('<link>')[0];
+      stylesheet = document.createElement('link');
       stylesheet.rel = 'stylesheet';
       stylesheet.href = 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300';
-      $('head').append($(stylesheet));
-      this.iframe_container = $('<div>');
-      this.iframe_container.addClass(MT.globals.IFRAME_CONTAINER_CLASS);
-      this.iframe_container.css('position', this.iframe_css_position());
-      this.iframe_container.css('z-index', 1999999999 + 199999);
-      this.iframe_container.css('background-color', MT.style.color.bg);
-      this.iframe_container.css('color', MT.style.color.font);
-      this.iframe_container.css('right', 0);
-      this.iframe_container.css('top', 0);
-      this.iframe_container.css('width', this.iframe_css_width());
-      this.iframe_container.css('max-width', "100%");
-      this.iframe_container.css('height', this.iframe_css_height());
-      this.iframe_container.css('border-left', "1px solid lightgray");
-      this.iframe_container.css('font-family', MT.style.font);
-      this.iframe_container.css('text-align', "center");
-      this.iframe_container.css('margin', "auto");
-      this.loader_elements_container = $('<div>');
-      this.loader_elements_container.addClass("iframe_loader");
-      image = $('<img>');
-      image.css('padding', 10);
-      image.css('margin', 'auto');
-      image.css('display', "block");
+      document.head.appendChild(stylesheet);
+      this.iframe_container = document.createElement('div');
+      this.iframe_container.classList.add(MT.globals.IFRAME_CONTAINER_CLASS);
+      this.iframe_container.style.position = this.iframe_css_position();
+      this.iframe_container.style.zIndex = 1999999999 + 199999;
+      this.iframe_container.style.backgroundColor = MT.style.color.bg;
+      this.iframe_container.style.color = MT.style.color.font;
+      this.iframe_container.style.right = 0;
+      this.iframe_container.style.top = 0;
+      this.iframe_container.style.width = this.iframe_css_width();
+      this.iframe_container.style.maxWidth = "100%";
+      this.iframe_container.style.height = this.iframe_css_height();
+      this.iframe_container.style.borderLeft = "1px solid lightgray";
+      this.iframe_container.style.fontFamily = MT.style.font;
+      this.iframe_container.style.textAlign = "center";
+      this.iframe_container.style.margin = "auto";
+      this.loader_elements_container = document.createElement('div');
+      this.loader_elements_container.classList.add("iframe_loader");
+      image = document.createElement('img');
+      image.style.padding = 10;
+      image.style.margin = 'auto';
+      image.style.display = "block";
       if (typeof chrome !== "undefined" && chrome !== null) {
-        image[0].src = chrome.extension.getURL("logo/mediatag.32.png");
+        image.src = chrome.extension.getURL("logo/mediatag.32.png");
       }
-      label = $('<div>');
-      label.css('padding-bottom', 10);
-      label.css('text-align', "center");
-      label.css('font-size', "24px");
-      label.css('display', "block");
-      label.text("loading...");
+      label = document.createElement('div');
+      label.style.paddingBottom = 10;
+      label.style.textAlign = "center";
+      label.style.fontSize = "24px";
+      label.style.display = "block";
+      label.textContent = "loading...";
       progress_bar = new MT.Widget.ProgressBar();
-      this.loader_elements_container.append(progress_bar.element);
-      this.loader_elements_container.append(image);
-      this.loader_elements_container.append(label);
-      this.iframe_container.append(this.loader_elements_container);
+      this.loader_elements_container.appendChild(progress_bar.element);
+      this.loader_elements_container.appendChild(image);
+      this.loader_elements_container.appendChild(label);
+      this.iframe_container.appendChild(this.loader_elements_container);
       container_parent = this.container_parent();
       if (container_parent != null) {
-        return container_parent.append(this.iframe_container);
+        return container_parent.appendChild(this.iframe_container);
       } else {
         return console.warn("NO CONTAINER PARENT TO ATTACH THE IFRAME");
       }
@@ -75,17 +76,17 @@
     BaseImporter.prototype.build_iframe = function() {
       var iframe_class, iframe_parent;
       iframe_class = "mediatag_iframe";
-      iframe_parent = $('body');
-      this.iframe = $('<iframe>');
-      this.iframe.attr('frameBorder', 0);
-      this.iframe.attr('name', "mediatag_extension");
-      this.iframe.css('width', '100%');
-      this.iframe.css('height', '100%');
-      this.iframe.css('box-shadow', '0px 5px 25px 0px gray');
-      this.iframe[0].crossOrigin = "anonymous";
-      this.iframe_container.append(this.iframe);
+      iframe_parent = document.body;
+      this.iframe = document.createElement('iframe');
+      this.iframe.frameBorder = 0;
+      this.iframe.name = "mediatag_extension";
+      this.iframe.crossOrigin = "anonymous";
+      this.iframe.style.width = '100%';
+      this.iframe.style.height = '100%';
+      this.iframe.style.boxShadow = '0px 5px 25px 0px gray';
+      this.iframe_container.appendChild(this.iframe);
       if (this.url != null) {
-        this.iframe.attr('src', this.url);
+        this.iframe.src = this.url;
         return this.start_timeout_count();
       } else {
         return console.warn("url needs to be overwritten");
@@ -119,28 +120,28 @@
 
     BaseImporter.prototype.display_iframe_loading_timeout = function() {
       var close_button, timeout_message, timeout_message_container;
-      timeout_message_container = $('<div>');
-      timeout_message_container.css('padding', '10px');
-      timeout_message = $('<div>');
-      timeout_message.text('This is taking too long, it might not work well on this site');
-      close_button = $('<a>');
-      close_button.text('close');
-      close_button.attr('href', '#');
-      close_button.css('color', MT.style.color.bg);
-      close_button.css('padding', '5px 8px');
-      close_button.css('background-color', MT.style.color.primary);
-      close_button.on('click', (function(_this) {
+      timeout_message_container = document.createElement('div');
+      timeout_message_container.style.padding = '10px';
+      timeout_message = document.createElement('div');
+      timeout_message.textContent = 'This is taking too long, it might not work well on this site';
+      close_button = document.createElement('a');
+      close_button.textContent = 'close';
+      close_button.href = '#';
+      close_button.style.color = MT.style.color.bg;
+      close_button.style.padding = '5px 8px';
+      close_button.style.backgroundColor = MT.style.color.primary;
+      close_button.onclick = (function(_this) {
         return function() {
           return _this.close();
         };
-      })(this));
-      timeout_message_container.append(timeout_message);
-      timeout_message_container.append(close_button);
-      return this.loader_elements_container.append(timeout_message_container);
+      })(this);
+      timeout_message_container.appendChild(timeout_message);
+      timeout_message_container.appendChild(close_button);
+      return this.loader_elements_container.appendChild(timeout_message_container);
     };
 
     BaseImporter.prototype.send_to_iframe = function(data) {
-      return MT.Manager.ContentScript.Window.post_message(this.iframe[0], data);
+      return MT.Manager.ContentScript.Window.post_message(this.iframe, data);
     };
 
     BaseImporter.prototype.send_to_main_window = function(data) {
@@ -190,9 +191,11 @@
                 }
                 break;
               case "resize":
-                return this.iframe.animate({
-                  height: data['height']
-                }, 200);
+                if (this.resize_allowed) {
+                  console.log("resize: " + data['height']);
+                  return this.iframe.style.height = data['height'] + "px";
+                }
+                break;
               case "request_import_data":
                 return this.send_import_data_to_iframe();
               case "close":

@@ -53,21 +53,27 @@
     };
 
     Capturer.prototype.get_stylesheet_content_from_url = function(url, callback) {
-      return $.ajax({
-        url: url,
-        success: (function(_this) {
-          return function(response) {
+      var request;
+      request = new XMLHttpRequest();
+      request.open('GET', url, true);
+      request.onload = (function(_this) {
+        return function(event) {
+          var response;
+          if ((response = request.response) != null) {
             return callback(response);
-          };
-        })(this),
-        error: (function(_this) {
-          return function(error) {
-            console.log("error");
-            console.log(error);
-            return callback();
-          };
-        })(this)
-      });
+          } else {
+            return console.log("stylesheet " + url + " returned no content");
+          }
+        };
+      })(this);
+      request.onerror = (function(_this) {
+        return function(error) {
+          console.log("error");
+          console.log(error);
+          return callback();
+        };
+      })(this);
+      return request.send();
     };
 
     return Capturer;

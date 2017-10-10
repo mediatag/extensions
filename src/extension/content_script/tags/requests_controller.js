@@ -13,91 +13,125 @@
     };
 
     RequestsController.prototype.get_available_hosts = function(unfetched_hosts, callback) {
-      var url;
+      var data, request, url;
       unfetched_hosts = unfetched_hosts.sort();
       if (unfetched_hosts.length > 0) {
         url = MT.Url.wrap('/api/webpages/tags/hosts');
         this.request_in_progress = true;
-        return $.ajax({
-          method: 'POST',
-          url: url,
-          data: {
-            hosts: unfetched_hosts,
-            origin: window.location.href
-          },
-          success: (function(_this) {
-            return function(data) {
-              var available_hosts;
+        request = new XMLHttpRequest();
+        request.open('POST', url, true);
+        request.setRequestHeader("Content-Type", "application/json");
+        request.onload = (function(_this) {
+          return function(event) {
+            var available_hosts, data, response;
+            if ((response = request.response) != null) {
+              data = JSON.parse(response);
+              console.log(data);
               _this.request_in_progress = false;
               available_hosts = data;
               return callback(available_hosts);
-            };
-          })(this),
-          error: (function(_this) {
-            return function(error) {
-              _this.request_in_progress = false;
-              console.log("error while querying hosts");
-              return console.log(error);
-            };
-          })(this)
-        });
+            } else {
+              return console.log("get_available_hosts returned no content");
+            }
+          };
+        })(this);
+        request.onerror = (function(_this) {
+          return function(error) {
+            _this.request_in_progress = false;
+            console.log("error while querying hosts");
+            return console.log(error);
+          };
+        })(this);
+        data = {
+          origin: this.origin(),
+          hosts: unfetched_hosts
+        };
+        console.log("get_available_hosts");
+        return request.send(JSON.stringify(data));
       } else {
         return callback([]);
       }
     };
 
     RequestsController.prototype.get_urls_tags = function(urls, callback) {
-      var url;
+      var data, request, url;
       url = MT.Url.wrap('/api/webpages/tags/tags');
       if (urls.length > 0) {
         this.request_in_progress = true;
-        return $.ajax({
-          method: 'POST',
-          url: url,
-          data: {
-            origin: window.location.href,
-            urls: urls
-          },
-          success: (function(_this) {
-            return function(data) {
-              var tags_by_url;
+        request = new XMLHttpRequest();
+        request.open('POST', url, true);
+        request.setRequestHeader("Content-Type", "application/json");
+        request.onload = (function(_this) {
+          return function(event) {
+            var data, response, tags_by_url;
+            if ((response = request.response) != null) {
+              data = JSON.parse(response);
+              console.log(data);
               tags_by_url = data;
               _this.request_in_progress = false;
               return callback(tags_by_url);
-            };
-          })(this),
-          error: (function(_this) {
-            return function(error) {
-              _this.request_in_progress = false;
-              console.log("error while querying tags");
-              return console.log(error);
-            };
-          })(this)
-        });
+            } else {
+              return console.log("get_urls_tags returned no content");
+            }
+          };
+        })(this);
+        request.onerror = (function(_this) {
+          return function(error) {
+            _this.request_in_progress = false;
+            console.log("error while querying tags");
+            return console.log(error);
+          };
+        })(this);
+        data = {
+          origin: this.origin(),
+          urls: urls
+        };
+        console.log("get_urls_tags");
+        return request.send(JSON.stringify(data));
       } else {
         return callback();
       }
     };
 
     RequestsController.prototype.query_user_preferences = function(callback) {
-      var url;
+      var request, url;
       url = MT.Url.wrap('/api/preferences');
-      console.log(url);
-      return $.ajax({
-        url: url,
-        data: {
-          origin: window.location.href
-        },
-        success: function(data) {
-          if (data.display === true) {
-            return callback();
-          }
-        },
-        error: function(error) {
-          console.log("error while querying preferences");
-          return console.log(error);
-        }
-      });
+      if (this.hostname() === 'localhost') {
+
+      } else {
+        url += "?origin=" + (this.origin());
+        request = new XMLHttpRequest();
+        request.open('GET', url, true);
+        request.onload = (function(_this) {
+          return function(event) {
+            var data, response;
+            if ((response = request.response) != null) {
+              data = JSON.parse(response);
+              console.log(data);
+              if (data.display === true) {
+                return callback();
+              }
+            } else {
+              return console.log("query_user_preferences returned no content");
+            }
+          };
+        })(this);
+        request.onerror = (function(_this) {
+          return function(error) {
+            console.log("error while querying preferences");
+            return console.log(error);
+          };
+        })(this);
+        return request.send();
+      }
+    };
+
+    RequestsController.prototype.origin = function() {
+      return window.location.href;
+    };
+
+    RequestsController.prototype.hostname = function() {
+      return window.location.hostname;
     };
 
     return RequestsController;

@@ -4,10 +4,9 @@
   WindowManager = (function() {
     function WindowManager() {
       this.callbacks = {};
-      $(window).on('message', (function(_this) {
+      window.onmessage = (function(_this) {
         return function(e) {
           var callback, data;
-          e = e.originalEvent;
           data = e.data;
           if ((callback = _this.callbacks[data['response_command']]) != null) {
             return callback.apply(_this, [data]);
@@ -15,7 +14,7 @@
             return _this.process_message(e.data, e);
           }
         };
-      })(this));
+      })(this);
       this.onbeforeunload_callbacks = [];
       window.onbeforeunload = (function(_this) {
         return function() {
@@ -81,7 +80,7 @@
         options = {};
       }
       options['command'] = "resize";
-      options['height'] = $(document).height();
+      options['height'] = document.body.clientHeight;
       return this.post_message_to_parent(options);
     };
 

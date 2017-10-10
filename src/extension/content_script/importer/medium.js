@@ -9,6 +9,7 @@
     function MediumImporter(data1) {
       this.data = data1;
       MediumImporter.__super__.constructor.apply(this, arguments);
+      this.resize_allowed = true;
       this.service_name = this.data['service_name'];
       this.medium_url = this.data.tab.url;
       this.url = MT.Url.wrap(MT.routes.extension_imports_medium_path);
@@ -46,18 +47,20 @@
     };
 
     MediumImporter.prototype.create_vimeo_container_parent = function() {
-      var el;
-      el = $('<div>');
-      el.css('width', '100%');
-      el.insertAfter($('.player_area-wrapper'));
+      var el, sibbling;
+      el = document.createElement('div');
+      el.style.width = '100%';
+      sibbling = document.getElementsByClassName('player_area-wrapper')[0];
+      MT.DomHelper.insertAfter(el, sibbling);
       return el;
     };
 
     MediumImporter.prototype.create_youtube_container_parent = function() {
-      var el;
-      el = $('<div>');
-      el.css('width', '100%');
-      el.insertAfter($('#player-container'));
+      var el, sibbling;
+      el = document.createElement('div');
+      el.style.width = '100%';
+      sibbling = document.getElementById('player-container');
+      MT.DomHelper.insertAfter(el, sibbling);
       return el;
     };
 

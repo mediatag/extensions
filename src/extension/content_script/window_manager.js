@@ -21,7 +21,6 @@
       var command;
       if (data != null) {
         if ((command = data['command']) != null) {
-          console.log(command);
           switch (command) {
             case MT.EVENTS.SCREENSHOT_REQUESTED:
               return this.process_screenshot(data);

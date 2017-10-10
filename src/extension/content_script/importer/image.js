@@ -47,7 +47,7 @@
     ImageImporter.prototype.find_image = function(truncated_src) {
       var expr, image;
       expr = "[src$='" + truncated_src + "']";
-      return image = $(expr)[0];
+      return image = document.querySelectorAll(expr)[0];
     };
 
     ImageImporter.prototype.process_command = function(command, data) {

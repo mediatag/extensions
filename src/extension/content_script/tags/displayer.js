@@ -4,7 +4,6 @@
   Displayer = (function() {
     function Displayer() {
       var classes_to_ignore, link_class_with_added_tags, link_class_with_considered_url, tag_class, tag_container_class;
-      console.log("TAGS DISPLAYER INIT");
       link_class_with_added_tags = 'mediatag_tag_link_with_added_tags';
       link_class_with_considered_url = 'mediatag_tag_link_from_content_script';
       tag_class = 'mediatag_tag_class';
@@ -111,8 +110,9 @@
   })();
 
   if (window.tags_display_allowed === true) {
-    $(document).ready(function() {
-      return new Displayer();
+    window.tags_displayer = null;
+    MT.DomHelper.on_document_ready(function() {
+      return window.tags_displayer != null ? window.tags_displayer : window.tags_displayer = new Displayer();
     });
   }
 

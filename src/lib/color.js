@@ -152,7 +152,14 @@
       white: 'ffffff',
       whitesmoke: 'f5f5f5',
       yellow: 'ffff00',
-      yellowgreen: '9acd32'
+      yellowgreen: '9acd32',
+      "private": 'cc4b37',
+      "public": '66e866',
+      youtube: 'ff0000',
+      vimeo: '00adef',
+      lemonde: '010101',
+      pinterest: 'bd081c',
+      'news.ycombinator': 'ff6600'
     };
 
     Color.hex_to_rgb = function(hex) {
@@ -220,16 +227,21 @@
       var hue, l, s;
       s = 90;
       l = 90;
-      if (name === 'white') {
-        s = 99;
-        l = 99;
-      } else if (name === 'black') {
-        s = 0;
-        l = 60;
-      } else if (_.includes(name, 'light')) {
-        l = 95;
-      } else if (_.includes(name, 'dark')) {
-        l = 80;
+      switch (name) {
+        case 'white':
+          s = 99;
+          l = 99;
+          break;
+        case 'black':
+          s = 0;
+          l = 60;
+          break;
+        default:
+          if (_.includes(name, 'light')) {
+            l = 95;
+          } else if (_.includes(name, 'dark')) {
+            l = 80;
+          }
       }
       hue = this.hue_from_name(name);
       return "hsl(" + hue + ", " + s + "%, " + l + "%)";

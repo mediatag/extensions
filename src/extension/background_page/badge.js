@@ -16,7 +16,7 @@
     })(this));
   };
 
-  $(document).ready(function() {
+  MT.DomHelper.on_document_ready(function() {
     if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
 
     } else {

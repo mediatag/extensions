@@ -39,13 +39,12 @@
         return function(datauri) {
           var crop_options, handler, offset;
           if (datauri != null) {
-            element = $(element);
-            offset = element.offset();
+            offset = MT.DomHelper.offset(element);
             crop_options = {
               x: offset['left'],
-              y: Math.ceil(offset['top']) - $(window).scrollTop(),
-              width: element.width(),
-              height: element.height()
+              y: Math.ceil(offset['top']) - document.body.scrollTop,
+              width: element.offsetWidth,
+              height: element.offsetHeight
             };
             handler = new MT.ImageHandler(datauri);
             return handler.get_cropped_data(crop_options, function(cropped_datauri) {

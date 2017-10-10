@@ -46,6 +46,10 @@
       return host = parser.hostname;
     };
 
+    Url.prototype.tag_url = function(tag_name) {
+      return this.wrap("/dashboard/tags/" + tag_name);
+    };
+
     return Url;
 
   })();

@@ -15,7 +15,7 @@
     };
 
     EventsController.prototype.get_pending_nodes = function() {
-      return this.pending_nodes;
+      return _.flatten(this.pending_nodes);
     };
 
     EventsController.prototype.set_clean = function() {
@@ -30,19 +30,10 @@
           return function(mutations) {
             var added_nodes;
             added_nodes = _.uniq(_.flatten(_.map(mutations, function(mutation) {
-              return mutation.addedNodes;
+              return Array.prototype.slice.call(mutation.addedNodes);
             })));
             if (added_nodes.length > 0) {
-              added_nodes = _.filter(added_nodes, function(added_node) {
-                var is_a_tag_added_by_content_script;
-                is_a_tag_added_by_content_script = false;
-                _.each(_this.classes_to_ignore, function(class_to_ignore) {
-                  if ($(added_node).hasClass(class_to_ignore)) {
-                    return is_a_tag_added_by_content_script = true;
-                  }
-                });
-                return !is_a_tag_added_by_content_script;
-              });
+              added_nodes = _this.filter_added_nodes(added_nodes);
               if (added_nodes.length > 0) {
                 _.each(added_nodes, function(added_node) {
                   return _this.pending_nodes.push(added_node);
@@ -60,6 +51,22 @@
       } else {
         return console.log("MutationObserver not defined");
       }
+    };
+
+    EventsController.prototype.filter_added_nodes = function(added_nodes) {
+      console.log(added_nodes);
+      return _.filter(added_nodes, (function(_this) {
+        return function(added_node) {
+          var is_a_tag_added_by_content_script;
+          is_a_tag_added_by_content_script = false;
+          _.each(_this.classes_to_ignore, function(class_to_ignore) {
+            if (MT.DomHelper.hasClass(added_node, class_to_ignore)) {
+              return is_a_tag_added_by_content_script = true;
+            }
+          });
+          return !is_a_tag_added_by_content_script;
+        };
+      })(this));
     };
 
     return EventsController;

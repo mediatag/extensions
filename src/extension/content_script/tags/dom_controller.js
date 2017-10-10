@@ -19,10 +19,10 @@
 
     DomController.prototype.find_urls = function(parent) {
       var links;
-      links = $(parent).find('a[href]');
+      links = parent.querySelectorAll('a[href]');
       return _.each(links, (function(_this) {
         return function(link) {
-          return _this.add_link_url($(link));
+          return _this.add_link_url(link);
         };
       })(this));
     };
@@ -47,20 +47,20 @@
 
     DomController.prototype.add_link_url = function(link) {
       var base, url;
-      if (link.attr('href') == null) {
+      if (link.href == null) {
         return;
       }
-      if (link.attr('href').length === 0) {
+      if (link.href.length === 0) {
         return;
       }
-      if (link.hasClass(this.link_class_with_considered_url)) {
+      if (_.include(link.classList, this.link_class_with_considered_url)) {
         return;
       }
-      if (link.find('img').length > 0) {
+      if (link.querySelectorAll('img').length > 0) {
         return;
       }
-      link.addClass(this.link_class_with_considered_url);
-      url = link.attr('href');
+      link.classList.add(this.link_class_with_considered_url);
+      url = link.href;
       url = MT.Url.resolve_url(url);
       if (this.processed_state_by_url[url] == null) {
         this.processed_state_by_url[url] = false;
@@ -102,15 +102,15 @@
       first_link = null;
       _.each(links, (function(_this) {
         return function(link) {
-          if (!link.hasClass(_this.link_class_with_added_tags)) {
-            link.addClass(_this.link_class_with_added_tags);
+          if (!MT.DomHelper.hasClass(link, _this.link_class_with_added_tags)) {
+            link.classList.add(_this.link_class_with_added_tags);
             return first_link != null ? first_link : first_link = link;
           }
         };
       })(this));
       if (first_link != null) {
         tag_container = this.create_tag_container();
-        $(first_link).append(tag_container);
+        MT.DomHelper.insertAfter(tag_container, first_link);
         return _.each(tag_names, (function(_this) {
           return function(tag_name) {
             return tag_container.append(_this.create_tag(tag_name));
@@ -121,22 +121,23 @@
 
     DomController.prototype.create_tag_container = function() {
       var tag_container;
-      tag_container = $('<span>');
-      tag_container.addClass(this.tag_container_class);
+      tag_container = document.createElement('span');
+      tag_container.classList.add(this.tag_container_class);
       return tag_container;
     };
 
     DomController.prototype.create_tag = function(name) {
       var tag;
-      tag = $('<span>');
-      tag.addClass(this.tag_class);
-      tag.css('display', 'inline-block inline-flex');
-      tag.css('padding', '2px 5px');
-      tag.css('margin-left', '3px');
-      tag.css('border-radius', '3px');
-      tag.css('background-color', Color.hsl_from_name(name));
-      tag.css('color', '#111');
-      tag.text(name);
+      tag = document.createElement('a');
+      tag.classList.add(this.tag_class);
+      tag.style.display = 'inline-block inline-flex';
+      tag.style.padding = '2px 5px';
+      tag.style.marginLeft = '3px';
+      tag.style.borderRadius = '3px';
+      tag.style.backgroundColor = Color.hsl_from_name(name);
+      tag.style.color = '#111';
+      tag.textContent = name;
+      tag.href = MT.Url.tag_url(name);
       return tag;
     };
 
