@@ -157,7 +157,6 @@
       "public": '66e866',
       youtube: 'ff0000',
       vimeo: '00adef',
-      lemonde: '010101',
       pinterest: 'bd081c',
       'news.ycombinator': 'ff6600'
     };

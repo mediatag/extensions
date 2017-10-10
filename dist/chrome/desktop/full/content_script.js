@@ -1768,7 +1768,6 @@ window.tags_display_allowed=true;
       "public": '66e866',
       youtube: 'ff0000',
       vimeo: '00adef',
-      lemonde: '010101',
       pinterest: 'bd081c',
       'news.ycombinator': 'ff6600'
     };
@@ -4099,7 +4098,6 @@ window.tags_display_allowed=true;
     };
 
     EventsController.prototype.filter_added_nodes = function(added_nodes) {
-      console.log(added_nodes);
       return _.filter(added_nodes, (function(_this) {
         return function(added_node) {
           var is_a_tag_added_by_content_script;

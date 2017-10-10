@@ -54,7 +54,6 @@
     };
 
     EventsController.prototype.filter_added_nodes = function(added_nodes) {
-      console.log(added_nodes);
       return _.filter(added_nodes, (function(_this) {
         return function(added_node) {
           var is_a_tag_added_by_content_script;
