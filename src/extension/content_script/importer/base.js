@@ -184,20 +184,14 @@
         if (data != null) {
           if ((command = data['command']) != null) {
             switch (command) {
-              case 'confirm_iframe_loaded':
-                if (this.loader_elements_container != null) {
-                  this.loader_elements_container.remove();
-                  return this.loader_elements_container = null;
-                }
-                break;
-              case "resize":
+              case MT.EVENTS.CONFIRM_IFRAME_LOADED:
+                return this.handle_iframe_loaded_confirmation();
+              case MT.EVENTS.RESIZE_IFRAME:
                 if (this.resize_allowed) {
                   console.log("resize: " + data['height']);
                   return this.iframe.style.height = data['height'] + "px";
                 }
                 break;
-              case "request_import_data":
-                return this.send_import_data_to_iframe();
               case "close":
                 return this.close();
               case "new_tab":
@@ -229,6 +223,13 @@
       if (this.iframe_container != null) {
         this.iframe_container.remove();
         return this.iframe_container = null;
+      }
+    };
+
+    BaseImporter.prototype.handle_iframe_loaded_confirmation = function() {
+      if (this.loader_elements_container != null) {
+        this.loader_elements_container.remove();
+        return this.loader_elements_container = null;
       }
     };
 

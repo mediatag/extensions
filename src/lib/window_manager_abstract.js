@@ -79,7 +79,7 @@
       if (options == null) {
         options = {};
       }
-      options['command'] = "resize";
+      options['command'] = MT.EVENTS.RESIZE_IFRAME;
       options['height'] = document.body.clientHeight;
       return this.post_message_to_parent(options);
     };

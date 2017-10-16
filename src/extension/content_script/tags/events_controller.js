@@ -18,7 +18,7 @@
       return _.flatten(this.pending_nodes);
     };
 
-    EventsController.prototype.set_clean = function() {
+    EventsController.prototype.clean_pending_nodes = function() {
       this.pending_nodes = [];
       return this.dirty = false;
     };

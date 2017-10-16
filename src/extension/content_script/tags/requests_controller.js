@@ -94,44 +94,20 @@
     };
 
     RequestsController.prototype.query_user_preferences = function(callback) {
-      var request, url;
-      url = MT.Url.wrap('/api/preferences');
-      if (this.hostname() === 'localhost') {
-
-      } else {
-        url += "?origin=" + (this.origin());
-        request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.onload = (function(_this) {
-          return function(event) {
-            var data, response;
-            if ((response = request.response) != null) {
-              data = JSON.parse(response);
-              console.log(data);
-              if (data.display === true) {
-                return callback();
-              }
-            } else {
-              return console.log("query_user_preferences returned no content");
-            }
-          };
-        })(this);
-        request.onerror = (function(_this) {
-          return function(error) {
-            console.log("error while querying preferences");
-            return console.log(error);
-          };
-        })(this);
-        return request.send();
-      }
+      return MT.ContentScript.UserPreferencesController.send_request((function(_this) {
+        return function(data) {
+          if (data['tags_display'] === true) {
+            return callback();
+          } else {
+            console.log("tags display not allowed");
+            return console.log(data);
+          }
+        };
+      })(this));
     };
 
     RequestsController.prototype.origin = function() {
       return window.location.href;
-    };
-
-    RequestsController.prototype.hostname = function() {
-      return window.location.hostname;
     };
 
     return RequestsController;

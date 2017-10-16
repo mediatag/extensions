@@ -51,15 +51,16 @@
     };
 
     ImageImporter.prototype.process_command = function(command, data) {
-      if (command === 'request_image_import_data') {
-        return this.send_import_data_to_iframe();
+      switch (command) {
+        case MT.EVENTS.REQUEST_IMPORT_DATA:
+          return this.send_import_data_to_iframe();
       }
     };
 
     ImageImporter.prototype.import_data = function() {
       var data;
       return data = {
-        'command': "import_image_data",
+        'command': MT.EVENTS.IMPORT_DATA,
         'src': this.src,
         'origin': this.origin,
         'title': this.title,

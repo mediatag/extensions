@@ -33,7 +33,6 @@
     };
 
     WebpageImporter.prototype.embed_assets = function(callback) {
-      this.init_iframe_message_events();
       return this.image_handler.find_images_to_convert_to_datauri((function(_this) {
         return function() {
           return _this.elements_with_bg_image_handler.find_elements_to_convert_to_datauri(function() {
@@ -75,18 +74,25 @@
     WebpageImporter.prototype.prepare_html_and_build_iframe = function() {
       return this.screenshot_and_clone_html((function(_this) {
         return function() {
+          _this.init_iframe_message_events();
           _this.build_iframe_container_and_loader();
-          return _this.embed_assets(function() {
-            return _this.build_iframe();
-          });
+          return _this.build_iframe();
         };
       })(this));
+    };
+
+    WebpageImporter.prototype.pre_import_data = function() {
+      var data;
+      return data = {
+        command: MT.EVENTS.PRE_IMPORT_DATA,
+        webpage_url: this.webpage_url
+      };
     };
 
     WebpageImporter.prototype.import_data = function() {
       var data;
       return data = {
-        command: "import_webpage_data",
+        command: MT.EVENTS.IMPORT_DATA,
         webpage_url: this.webpage_url,
         title: this.webpage_title,
         favicon_url: this.favicon_url,
@@ -98,6 +104,46 @@
           height: window.innerHeight
         }
       };
+    };
+
+    WebpageImporter.prototype.process_command = function(command, data) {
+      if ((command = data['command']) != null) {
+        switch (command) {
+          case MT.EVENTS.REQUEST_PRE_IMPORT_DATA:
+            return this.send_pre_import_data_to_iframe();
+          case MT.EVENTS.PROCESS_USER_PREFERENCES:
+            return this.handle_user_preferences(data);
+        }
+      }
+    };
+
+    WebpageImporter.prototype.request_user_preferences = function() {
+      return MT.ContentScript.UserPreferencesController.send_request((function(_this) {
+        return function(data) {
+          return _this.handle_user_preferences(data);
+        };
+      })(this));
+    };
+
+    WebpageImporter.prototype.handle_user_preferences = function(data) {
+      var preferences, webpages_archiving;
+      console.log(data);
+      preferences = data['preferences'];
+      webpages_archiving = preferences['webpages_archiving'];
+      console.log("preferences: webpages_archiving: " + webpages_archiving);
+      if (!webpages_archiving) {
+        return this.send_import_data_to_iframe();
+      } else {
+        return this.embed_assets((function(_this) {
+          return function() {
+            return _this.send_import_data_to_iframe();
+          };
+        })(this));
+      }
+    };
+
+    WebpageImporter.prototype.send_pre_import_data_to_iframe = function() {
+      return this.send_to_iframe(this.pre_import_data());
     };
 
     WebpageImporter.prototype.convert_links = function() {

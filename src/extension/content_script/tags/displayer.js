@@ -93,7 +93,7 @@
       }
       pending_nodes = this.events_controller.get_pending_nodes();
       if (pending_nodes.length > 0) {
-        this.events_controller.set_clean();
+        this.events_controller.clean_pending_nodes();
         _.each(pending_nodes, (function(_this) {
           return function(pending_node) {
             return _this.dom_controller.find_urls(pending_node);
@@ -109,9 +109,10 @@
 
   })();
 
+  console.log("window.tags_display_allowed: " + window.tags_display_allowed);
+
   if (window.tags_display_allowed === true) {
-    window.tags_displayer = null;
-    MT.DomHelper.on_document_ready(function() {
+    MT.DocumentReady.on(function() {
       return window.tags_displayer != null ? window.tags_displayer : window.tags_displayer = new Displayer();
     });
   }

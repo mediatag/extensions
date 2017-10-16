@@ -89,20 +89,21 @@
     };
 
     MediumImporter.prototype.process_command = function(command, data) {
-      if (command === 'request_medium_import_data') {
-        return this.send_import_data_to_iframe();
-      } else if (command === 'confirm_medium_loaded') {
-        return this.monitor_time_update();
-      } else if (command === 'set_time') {
-        return this.set_time(data['time']);
-      } else if (command === MT.EVENTS.SCREENSHOT_REQUESTED) {
-        return this.take_screenshot();
+      switch (command) {
+        case MT.EVENTS.REQUEST_IMPORT_DATA:
+          return this.send_import_data_to_iframe();
+        case MT.EVENTS.CONFIRM_MEDIUM_LOADED:
+          return this.monitor_time_update();
+        case MT.EVENTS.MEDIUM_SET_TIME:
+          return this.set_time(data['time']);
+        case MT.EVENTS.SCREENSHOT_REQUESTED:
+          return this.take_screenshot();
       }
     };
 
     MediumImporter.prototype.send_import_data_to_iframe = function() {
       return this.send_to_iframe({
-        'command': "import_image_data",
+        'command': MT.EVENTS.IMPORT_DATA,
         'url': this.medium_url
       });
     };
@@ -115,7 +116,7 @@
         if ((this.time == null) || (Math.abs(this.time - time) >= delta)) {
           this.time = time;
           this.send_to_iframe({
-            command: 'time_updated',
+            command: MT.EVENTS.MEDIUM_TIME_UPDATED,
             time: this.time
           });
         }

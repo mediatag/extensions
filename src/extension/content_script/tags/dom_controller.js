@@ -19,6 +19,9 @@
 
     DomController.prototype.find_urls = function(parent) {
       var links;
+      if (parent.querySelectorAll == null) {
+        return;
+      }
       links = parent.querySelectorAll('a[href]');
       return _.each(links, (function(_this) {
         return function(link) {

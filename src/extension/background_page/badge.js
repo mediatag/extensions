@@ -16,12 +16,10 @@
     })(this));
   };
 
-  MT.DomHelper.on_document_ready(function() {
-    if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
+  if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
 
-    } else {
-      return chrome.browserAction.onClicked.addListener(on_badge_clicked);
-    }
-  });
+  } else {
+    chrome.browserAction.onClicked.addListener(on_badge_clicked);
+  }
 
 }).call(this);

@@ -1,7 +1,6 @@
 (function() {
-  MT.DomHelper.on_document_ready(function() {
+  MT.DocumentReady.on(function() {
     var c;
-    console.log("adding events");
     if (window.window_listener_added == null) {
       window.window_listener_added = true;
       c = (function(_this) {

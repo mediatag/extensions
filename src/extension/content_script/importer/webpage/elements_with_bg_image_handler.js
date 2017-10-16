@@ -33,7 +33,6 @@
 
     ElementsWithBgImageHandler.prototype.prepare_element = function(element) {
       var bg_src, height, min_dim, original_element, style, width;
-      console.log("prepare_element", element);
       original_element = this.original_element(element);
       width = Math.floor(original_element.offsetWidth);
       height = Math.floor(original_element.offsetHeight);

@@ -22,14 +22,6 @@
       return (ref = el.classList) != null ? ref.contains(class_name) : void 0;
     };
 
-    DomHelper.prototype.on_document_ready = function(callback) {
-      if (document.readyState === 'complete') {
-        return callback();
-      } else {
-        return document.addEventListener("DOMContentLoaded", callback);
-      }
-    };
-
     return DomHelper;
 
   })();

@@ -1610,44 +1610,56 @@ window.tags_display_allowed=false;
 
 }).call(this);
 (function() {
-  var DomHelper;
+  var DocumentReady, completed;
 
-  DomHelper = (function() {
-    function DomHelper() {}
+  DocumentReady = (function() {
+    function DocumentReady() {
+      this.callbacks = [];
+      this.callbacks_executed = false;
+    }
 
-    DomHelper.prototype.insertAfter = function(newNode, referenceNode) {
-      return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    };
-
-    DomHelper.prototype.offset = function(el) {
-      var obj, rect;
-      rect = el.getBoundingClientRect();
-      return obj = {
-        top: rect.top + document.body.scrollTop,
-        left: rect.left + document.body.scrollLeft
-      };
-    };
-
-    DomHelper.prototype.hasClass = function(el, class_name) {
-      var ref;
-      return (ref = el.classList) != null ? ref.contains(class_name) : void 0;
-    };
-
-    DomHelper.prototype.on_document_ready = function(callback) {
-      if (document.readyState === 'complete') {
+    DocumentReady.prototype.on = function(callback) {
+      if (this.callbacks_executed) {
         return callback();
       } else {
-        return document.addEventListener("DOMContentLoaded", callback);
+        return this.callbacks.push(callback);
       }
     };
 
-    return DomHelper;
+    DocumentReady.prototype.execute_callbacks = function() {
+      var callback, i, len, ref;
+      if (this.callbacks_executed) {
+        return;
+      }
+      this.callbacks_executed = true;
+      ref = this.callbacks;
+      for (i = 0, len = ref.length; i < len; i++) {
+        callback = ref[i];
+        callback();
+      }
+      return this.callbacks = [];
+    };
+
+    return DocumentReady;
 
   })();
 
   namespace("MT", function(e) {
-    return e.DomHelper != null ? e.DomHelper : e.DomHelper = new DomHelper();
+    return e.DocumentReady != null ? e.DocumentReady : e.DocumentReady = new DocumentReady();
   });
+
+  completed = function() {
+    document.removeEventListener("DOMContentLoaded", completed);
+    window.removeEventListener("load", completed);
+    return MT.DocumentReady.execute_callbacks();
+  };
+
+  if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
+    window.setTimeout(MT.DocumentReady.execute_callbacks());
+  } else {
+    document.addEventListener("DOMContentLoaded", completed);
+    window.addEventListener("load", completed);
+  }
 
 }).call(this);
 (function() {
@@ -1659,7 +1671,17 @@ window.tags_display_allowed=false;
     SCREENSHOT_REQUESTED: "SCREENSHOT_REQUESTED",
     SCREENSHOT_COMPLETED: "SCREENSHOT_COMPLETED",
     SCREENSHOT_ERROR: "SCREENSHOT_ERROR",
+    REQUEST_PRE_IMPORT_DATA: "REQUEST_PRE_IMPORT_DATA",
+    PROCESS_USER_PREFERENCES: "PROCESS_USER_PREFERENCE",
     IMPORT_MEDIUM_OR_WEBPAGE: "IMPORT_MEDIUM_OR_WEBPAGE",
+    REQUEST_IMPORT_DATA: "REQUEST_IMPORT_DATA",
+    PRE_IMPORT_DATA: "PRE_IMPORT_DATA",
+    IMPORT_DATA: "IMPORT_DATA",
+    RESIZE_IFRAME: "RESIZE_IFRAME",
+    CONFIRM_IFRAME_LOADED: "CONFIRM_IFRAME_LOADED",
+    CONFIRM_MEDIUM_LOADED: "CONFIRM_MEDIUM_LOADED",
+    MEDIUM_SET_TIME: "MEDIUM_SET_TIME",
+    MEDIUM_TIME_UPDATED: "MEDIUM_TIME_UPDATED",
     TEST_IMPORT_IMAGE: "TEST_IMPORT_IMAGE",
     TEST_IMPORT_WEBPAGE: "TEST_IMPORT_WEBPAGE"
   };
@@ -1940,13 +1962,11 @@ window.tags_display_allowed=false;
     })(this));
   };
 
-  MT.DomHelper.on_document_ready(function() {
-    if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
+  if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
 
-    } else {
-      return chrome.browserAction.onClicked.addListener(on_badge_clicked);
-    }
-  });
+  } else {
+    chrome.browserAction.onClicked.addListener(on_badge_clicked);
+  }
 
 }).call(this);
 (function() {
