@@ -56,7 +56,7 @@
       if (link.href.length === 0) {
         return;
       }
-      if (_.include(link.classList, this.link_class_with_considered_url)) {
+      if (MT.DomHelper.hasClass(link, this.link_class_with_considered_url)) {
         return;
       }
       if (link.querySelectorAll('img').length > 0) {
@@ -85,7 +85,7 @@
     };
 
     DomController.prototype.add_tags_for_url = function(url, tags) {
-      var first_link, links, tag_container, tag_names;
+      var first_link, links, selector, tag_container, tag_names;
       if (tags == null) {
         return;
       }
@@ -112,13 +112,19 @@
         };
       })(this));
       if (first_link != null) {
-        tag_container = this.create_tag_container();
-        MT.DomHelper.insertAfter(tag_container, first_link);
-        return _.each(tag_names, (function(_this) {
-          return function(tag_name) {
-            return tag_container.append(_this.create_tag(tag_name));
-          };
-        })(this));
+        if (first_link.parentNode == null) {
+          selector = "[href='" + first_link.attributes['href'].value + "']";
+          first_link = document.querySelectorAll(selector)[0];
+        }
+        if (first_link != null) {
+          tag_container = this.create_tag_container();
+          MT.DomHelper.insertAfter(tag_container, first_link);
+          return _.each(tag_names, (function(_this) {
+            return function(tag_name) {
+              return tag_container.append(_this.create_tag(tag_name));
+            };
+          })(this));
+        }
       }
     };
 
@@ -139,6 +145,7 @@
       tag.style.borderRadius = '3px';
       tag.style.backgroundColor = Color.hsl_from_name(name);
       tag.style.color = '#111';
+      tag.style.whiteSpace = 'nowrap';
       tag.textContent = name;
       tag.href = MT.Url.tag_url(name);
       return tag;

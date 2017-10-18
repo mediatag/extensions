@@ -5,7 +5,7 @@
     function Displayer() {
       var classes_to_ignore, link_class_with_added_tags, link_class_with_considered_url, tag_class, tag_container_class;
       link_class_with_added_tags = 'mediatag_tag_link_with_added_tags';
-      link_class_with_considered_url = 'mediatag_tag_link_from_content_script';
+      link_class_with_considered_url = 'mediatag_tag_link_with_considered_url';
       tag_class = 'mediatag_tag_class';
       tag_container_class = 'mediatag_tag_container_class';
       this.display_tags_user_allowed = false;

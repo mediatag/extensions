@@ -4105,7 +4105,7 @@ window.tags_display_allowed=true;
       if (link.href.length === 0) {
         return;
       }
-      if (_.include(link.classList, this.link_class_with_considered_url)) {
+      if (MT.DomHelper.hasClass(link, this.link_class_with_considered_url)) {
         return;
       }
       if (link.querySelectorAll('img').length > 0) {
@@ -4134,7 +4134,7 @@ window.tags_display_allowed=true;
     };
 
     DomController.prototype.add_tags_for_url = function(url, tags) {
-      var first_link, links, tag_container, tag_names;
+      var first_link, links, selector, tag_container, tag_names;
       if (tags == null) {
         return;
       }
@@ -4161,13 +4161,19 @@ window.tags_display_allowed=true;
         };
       })(this));
       if (first_link != null) {
-        tag_container = this.create_tag_container();
-        MT.DomHelper.insertAfter(tag_container, first_link);
-        return _.each(tag_names, (function(_this) {
-          return function(tag_name) {
-            return tag_container.append(_this.create_tag(tag_name));
-          };
-        })(this));
+        if (first_link.parentNode == null) {
+          selector = "[href='" + first_link.attributes['href'].value + "']";
+          first_link = document.querySelectorAll(selector)[0];
+        }
+        if (first_link != null) {
+          tag_container = this.create_tag_container();
+          MT.DomHelper.insertAfter(tag_container, first_link);
+          return _.each(tag_names, (function(_this) {
+            return function(tag_name) {
+              return tag_container.append(_this.create_tag(tag_name));
+            };
+          })(this));
+        }
       }
     };
 
@@ -4188,6 +4194,7 @@ window.tags_display_allowed=true;
       tag.style.borderRadius = '3px';
       tag.style.backgroundColor = Color.hsl_from_name(name);
       tag.style.color = '#111';
+      tag.style.whiteSpace = 'nowrap';
       tag.textContent = name;
       tag.href = MT.Url.tag_url(name);
       return tag;
@@ -4524,7 +4531,7 @@ window.tags_display_allowed=true;
     function Displayer() {
       var classes_to_ignore, link_class_with_added_tags, link_class_with_considered_url, tag_class, tag_container_class;
       link_class_with_added_tags = 'mediatag_tag_link_with_added_tags';
-      link_class_with_considered_url = 'mediatag_tag_link_from_content_script';
+      link_class_with_considered_url = 'mediatag_tag_link_with_considered_url';
       tag_class = 'mediatag_tag_class';
       tag_container_class = 'mediatag_tag_container_class';
       this.display_tags_user_allowed = false;
