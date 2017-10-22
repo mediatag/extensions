@@ -224,8 +224,8 @@
 
     Color.hsl_from_name = function(name) {
       var hue, l, s;
-      s = 90;
-      l = 90;
+      s = 100;
+      l = 85;
       switch (name) {
         case 'white':
           s = 99;

@@ -51,7 +51,17 @@
       el = document.createElement('div');
       el.style.width = '100%';
       sibbling = document.getElementsByClassName('player_area-wrapper')[0];
-      MT.DomHelper.insertAfter(el, sibbling);
+      if (sibbling == null) {
+        sibbling = document.getElementsByClassName('js-player_area-wrapper')[0];
+      }
+      if (sibbling == null) {
+        sibbling = document.getElementsByTagName('video')[0];
+      }
+      if (sibbling != null) {
+        MT.DomHelper.insertAfter(el, sibbling);
+      } else {
+        console.log("Woops, we could not insert our widget");
+      }
       return el;
     };
 
@@ -60,7 +70,14 @@
       el = document.createElement('div');
       el.style.width = '100%';
       sibbling = document.getElementById('player-container');
-      MT.DomHelper.insertAfter(el, sibbling);
+      if (sibbling == null) {
+        sibbling = document.getElementsByTagName('video')[0];
+      }
+      if (sibbling != null) {
+        MT.DomHelper.insertAfter(el, sibbling);
+      } else {
+        console.log("Woops, we could not insert our widget");
+      }
       return el;
     };
 

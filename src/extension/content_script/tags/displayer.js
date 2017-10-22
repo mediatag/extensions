@@ -109,8 +109,6 @@
 
   })();
 
-  console.log("window.tags_display_allowed: " + window.tags_display_allowed);
-
   if (window.tags_display_allowed === true) {
     MT.DocumentReady.on(function() {
       return window.tags_displayer != null ? window.tags_displayer : window.tags_displayer = new Displayer();
