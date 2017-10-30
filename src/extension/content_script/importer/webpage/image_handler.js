@@ -73,8 +73,6 @@
             }
           }
         }
-      } else {
-
       }
     };
 
@@ -102,23 +100,25 @@
         })(this));
         resolved_src = MT.Url.resolve_url(src);
         current_image_size = 0;
-        console.log(resolved_src);
         return this.capturer.get_image_datauri_from_url(resolved_src, (function(_this) {
           return function(datauri) {
             if (datauri != null) {
+              console.log("datauri got for " + resolved_src + " " + datauri.length);
               _this.debug("adding " + datauri.length + " to " + images.length + " images (total: " + (images.length * datauri.length) + ")");
               _.each(images, function(image) {
                 image.src = datauri;
                 _this.images_datauri_size += datauri.length;
-                return current_image_size += datauri.length;
+                current_image_size += datauri.length;
+                return true;
               });
-              return _this.finalize_src(src, resolved_src, current_image_size, callback);
             } else {
+              console.log("no datauri for " + resolved_src);
               _.each(images, function(image) {
-                return image.dataset['mediatagUrlToFetch'] = resolved_src;
+                image.dataset['mediatagUrlToFetch'] = resolved_src;
+                return true;
               });
-              return _this.finalize_src(src, resolved_src, current_image_size, callback);
             }
+            return _this.finalize_src(src, resolved_src, current_image_size, callback);
           };
         })(this));
       } else {
@@ -168,6 +168,7 @@
     ImageHandler.prototype.add_data_attributes = function() {
       var images;
       images = document.body.getElementsByTagName('img');
+      console.log("images count: " + images.length);
       return _.each(images, function(img, i) {
         return img.dataset['mediatagCopyImageId'] = i;
       });

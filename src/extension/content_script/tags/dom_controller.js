@@ -22,12 +22,16 @@
       if (parent.querySelectorAll == null) {
         return;
       }
-      links = parent.querySelectorAll('a[href]');
-      return _.each(links, (function(_this) {
-        return function(link) {
-          return _this.add_link_url(link);
-        };
-      })(this));
+      if (parent != null) {
+        links = parent.querySelectorAll('a[href]');
+        return _.each(links, (function(_this) {
+          return function(link) {
+            return _this.add_link_url(link);
+          };
+        })(this));
+      } else {
+        return console.log("no parent to querySelectorAll from");
+      }
     };
 
     DomController.prototype.set_urls_processed = function(urls) {

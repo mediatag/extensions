@@ -39,9 +39,12 @@
           var url;
           if (stylesheet != null) {
             url = stylesheet.href;
-            if (url != null) {
-              if (!_.includes(_this.stylesheet_urls, url)) {
-                return _this.stylesheet_urls.push(url);
+            if (_this.is_stylesheet_url_valid(url, true)) {
+              console.log("stylesheet: " + url);
+              if (url != null) {
+                if (!_.includes(_this.stylesheet_urls, url)) {
+                  return _this.stylesheet_urls.push(url);
+                }
               }
             }
           }
@@ -52,8 +55,11 @@
       return this.embed_next_stylesheet(callback);
     };
 
-    StylesheetHandler.prototype.is_stylesheet_url_valid = function(stylesheet_url) {
-      return (stylesheet_url != null) && stylesheet_url.length > 1;
+    StylesheetHandler.prototype.is_stylesheet_url_valid = function(stylesheet_url, require_css_ext) {
+      if (require_css_ext == null) {
+        require_css_ext = false;
+      }
+      return (stylesheet_url != null) && stylesheet_url.length > 1 && (!require_css_ext || stylesheet_url.split('.').pop() === 'css');
     };
 
     StylesheetHandler.prototype.embed_next_stylesheet = function(callback) {
@@ -62,6 +68,7 @@
       if (stylesheet_url != null) {
         if (this.is_stylesheet_url_valid(stylesheet_url)) {
           stylesheet_url = MT.Url.resolve_url(stylesheet_url);
+          console.log(stylesheet_url);
           request = new XMLHttpRequest();
           request.open('GET', stylesheet_url, true);
           request.onload = (function(_this) {

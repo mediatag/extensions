@@ -6,7 +6,7 @@
 
     UserPreferencesController.prototype.send_request = function(callback) {
       var request, url;
-      if (this.hostname() === 'localhost' && environment === 'production') {
+      if (environment === 'production' && (this.hostname() === 'localhost' || this.hostname().includes('127.'))) {
         console.log("hostname is localhost, not querying user preferences");
       } else if (this.hostname() === 'mediatag') {
         console.log("hostname is mediatag, not querying user preferences");
