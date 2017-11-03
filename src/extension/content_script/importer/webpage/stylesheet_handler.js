@@ -6,6 +6,7 @@
       this.parent = parent;
       this.stylesheet_urls = [];
       this.capturer = new MT.Extension.ContentScript.Capturer();
+      this.export_data = {};
     }
 
     StylesheetHandler.prototype.set_head = function(head) {
@@ -14,7 +15,7 @@
 
     StylesheetHandler.prototype.embed_css = function(callback) {
       var body_stylesheets, head_stylesheets, stylesheets, stylesheets_selector;
-      this.debug("embed_css START");
+      console.log("==== embed_css START");
       stylesheets_selector = 'link[rel=stylesheet]';
       head_stylesheets = document.head.querySelectorAll(stylesheets_selector);
       body_stylesheets = document.body.querySelectorAll(stylesheets_selector);
@@ -39,6 +40,7 @@
           var url;
           if (stylesheet != null) {
             url = stylesheet.href;
+            console.log(url);
             if (_this.is_stylesheet_url_valid(url, true)) {
               console.log("stylesheet: " + url);
               if (url != null) {
@@ -46,51 +48,66 @@
                   return _this.stylesheet_urls.push(url);
                 }
               }
+            } else {
+              return console.log("not valid");
             }
           }
         };
       })(this));
-      this.debug("found " + this.stylesheet_urls.length + " main stylesheets");
+      console.log("found " + this.stylesheet_urls.length + " main stylesheets");
       this.debug(this.stylesheet_urls);
       return this.embed_next_stylesheet(callback);
     };
 
     StylesheetHandler.prototype.is_stylesheet_url_valid = function(stylesheet_url, require_css_ext) {
+      var ext, stylesheet_url_without_param;
       if (require_css_ext == null) {
         require_css_ext = false;
       }
-      return (stylesheet_url != null) && stylesheet_url.length > 1 && (!require_css_ext || stylesheet_url.split('.').pop() === 'css');
+      if (stylesheet_url == null) {
+        return false;
+      }
+      if (stylesheet_url.length < 1) {
+        return false;
+      }
+      stylesheet_url_without_param = stylesheet_url.split('?')[0];
+      ext = stylesheet_url_without_param.split('.').pop();
+      return !require_css_ext || ext === 'css';
     };
 
     StylesheetHandler.prototype.embed_next_stylesheet = function(callback) {
-      var request, stylesheet_url, urls_sorted_by_size;
+      var request, resolved_stylesheet_url, stylesheet_url, urls_sorted_by_size;
       stylesheet_url = this.stylesheet_urls.shift();
       if (stylesheet_url != null) {
+        resolved_stylesheet_url = MT.Url.resolve_url(stylesheet_url);
+        this.export_data[resolved_stylesheet_url] = {
+          valid: this.is_stylesheet_url_valid(stylesheet_url)
+        };
         if (this.is_stylesheet_url_valid(stylesheet_url)) {
-          stylesheet_url = MT.Url.resolve_url(stylesheet_url);
-          console.log(stylesheet_url);
+          console.log(resolved_stylesheet_url);
           request = new XMLHttpRequest();
-          request.open('GET', stylesheet_url, true);
+          request.open('GET', resolved_stylesheet_url, true);
           request.onload = (function(_this) {
             return function(event) {
               var response;
               if ((response = request.response) != null) {
-                _this.embedded_stylesheet_size_by_urls[stylesheet_url] = response.length;
-                _this.process_stylesheet_content(response, stylesheet_url);
+                _this.process_stylesheet_content(response, resolved_stylesheet_url);
+              } else {
+                _this.export_data[resolved_stylesheet_url]['success'] = false;
               }
               return _this.embed_next_stylesheet(callback);
             };
           })(this);
           request.onerror = (function(_this) {
             return function(error) {
-              return _this.capturer.get_stylesheet_content_from_url(stylesheet_url, function(response) {
+              return _this.capturer.get_stylesheet_content_from_url(resolved_stylesheet_url, function(response) {
                 var style;
                 if (response != null) {
-                  _this.embedded_stylesheet_size_by_urls[stylesheet_url] = response.length;
-                  _this.process_stylesheet_content(response, stylesheet_url);
+                  _this.process_stylesheet_content(response, resolved_stylesheet_url);
                 } else {
                   style = document.createElement('style');
-                  style.dataset['mediatagUrlToFetch'] = stylesheet_url;
+                  style.dataset['mediatagUrlToFetch'] = resolved_stylesheet_url;
+                  _this.export_data[resolved_stylesheet_url]['success'] = false;
                   _this.head.appendChild(style);
                 }
                 return _this.embed_next_stylesheet(callback);
@@ -120,8 +137,12 @@
       }
     };
 
-    StylesheetHandler.prototype.process_stylesheet_content = function(stylesheet_content, stylesheet_url) {
+    StylesheetHandler.prototype.process_stylesheet_content = function(stylesheet_content, resolved_stylesheet_url) {
       var elements, style;
+      console.log(stylesheet_content);
+      this.embedded_stylesheet_size_by_urls[resolved_stylesheet_url] = stylesheet_content.length;
+      this.export_data[resolved_stylesheet_url]['response_size'] = stylesheet_content.length;
+      this.export_data[resolved_stylesheet_url]['success'] = true;
       elements = stylesheet_content.split(';');
       _.each(elements, (function(_this) {
         return function(element) {

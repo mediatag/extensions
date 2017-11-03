@@ -8,6 +8,7 @@
       this.finalize_src = bind(this.finalize_src, this);
       this.images_without_datauri_by_src = {};
       this.capturer = new MT.Extension.ContentScript.Capturer();
+      this.export_data = {};
     }
 
     ImageHandler.prototype.get_visible_area_datauri = function(callback) {
@@ -24,7 +25,7 @@
 
     ImageHandler.prototype.find_images_to_convert_to_datauri = function(callback) {
       var all_images, images_found;
-      this.debug("==== IMAGES");
+      console.log("==== IMAGES");
       this.images_dimensions_by_data_attr = {};
       all_images = this.body.getElementsByTagName('img');
       this.remove_picture_source_tags();
@@ -88,7 +89,7 @@
     };
 
     ImageHandler.prototype.convert_next_image_to_datauri = function(callback) {
-      var current_image_size, image_sizes, images, resolved_src, src, src_list;
+      var current_image_size, images, resolved_src, src, src_list;
       src_list = _.keys(this.images_without_datauri_by_src);
       src = src_list[0];
       if (src != null) {
@@ -102,9 +103,13 @@
         current_image_size = 0;
         return this.capturer.get_image_datauri_from_url(resolved_src, (function(_this) {
           return function(datauri) {
+            _this.export_data[resolved_src] = {
+              images_count: images.length,
+              success: datauri != null
+            };
             if (datauri != null) {
-              console.log("datauri got for " + resolved_src + " " + datauri.length);
               _this.debug("adding " + datauri.length + " to " + images.length + " images (total: " + (images.length * datauri.length) + ")");
+              _this.export_data[resolved_src]['dataruri_length'] = datauri.length;
               _.each(images, function(image) {
                 image.src = datauri;
                 _this.images_datauri_size += datauri.length;
@@ -112,7 +117,6 @@
                 return true;
               });
             } else {
-              console.log("no datauri for " + resolved_src);
               _.each(images, function(image) {
                 image.dataset['mediatagUrlToFetch'] = resolved_src;
                 return true;
@@ -122,9 +126,6 @@
           };
         })(this));
       } else {
-        image_sizes = _.sortBy(_.keys(this.images_src_by_size), function(k) {
-          return -parseInt(k);
-        });
         this.debug("=== DONE IMAGES");
         return callback();
       }

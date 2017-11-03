@@ -43,7 +43,6 @@
       image.onerror = function(error) {
         self.image_loaded = true;
         if (!self.delay_ellapsed) {
-          console.log(url + " load error");
           return callback();
         }
       };

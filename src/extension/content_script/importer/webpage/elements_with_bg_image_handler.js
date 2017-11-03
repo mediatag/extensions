@@ -8,6 +8,7 @@
       this.finalize_src = bind(this.finalize_src, this);
       this.elements_without_datauri_by_src = {};
       this.capturer = new MT.Extension.ContentScript.Capturer();
+      this.export_data = {};
     }
 
     ElementsWithBgImageHandler.prototype.set_body = function(body) {
@@ -16,7 +17,7 @@
 
     ElementsWithBgImageHandler.prototype.find_elements_to_convert_to_datauri = function(callback) {
       var all_elements, elements_found;
-      this.debug("==== ELEMENTS WITH BG IMAGES");
+      console.log("==== ELEMENTS WITH BG IMAGES");
       this.elements_dimensions_by_data_attr = {};
       all_elements = this.tagged_elements();
       _.each(all_elements, (function(_this) {
@@ -77,6 +78,10 @@
         current_element_size = 0;
         return this.capturer.get_image_datauri_from_url(resolved_src, (function(_this) {
           return function(datauri) {
+            _this.export_data[resolved_src] = {
+              images_count: elements.length,
+              success: datauri != null
+            };
             if (datauri != null) {
               datauri = datauri.replace(/[\n\r]+/g, '');
               datauri = datauri.replace(/\s{2,10}/g, ' ');

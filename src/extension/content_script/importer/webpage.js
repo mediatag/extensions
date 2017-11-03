@@ -46,7 +46,12 @@
               _this.html_content = html_el.outerHTML;
               _this.export_data = {
                 html: _this.html_content,
-                meta_data: _this.meta_data
+                meta_data: _this.meta_data,
+                capture_data: {
+                  images: _this.image_handler.export_data,
+                  elements_with_bg_images: _this.elements_with_bg_image_handler.export_data,
+                  stylesheets: _this.stylesheet_handler.export_data
+                }
               };
               _this.image_handler.clean();
               if (callback != null) {
