@@ -88,16 +88,20 @@
 
     WebpageImporter.prototype.pre_import_data = function() {
       var data;
-      return data = {
-        command: MT.EVENTS.PRE_IMPORT_DATA,
-        webpage_url: this.webpage_url
-      };
+      data = this.common_data();
+      data['command'] = MT.EVENTS.PRE_IMPORT_DATA;
+      return data;
     };
 
     WebpageImporter.prototype.import_data = function() {
       var data;
-      return data = {
-        command: MT.EVENTS.IMPORT_DATA,
+      data = this.common_data();
+      data['command'] = MT.EVENTS.IMPORT_DATA;
+      return data;
+    };
+
+    WebpageImporter.prototype.common_data = function() {
+      return {
         webpage_url: this.webpage_url,
         title: this.webpage_title,
         favicon_url: this.favicon_url,

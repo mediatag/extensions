@@ -3324,16 +3324,20 @@ window.tags_display_allowed=false;
 
     WebpageImporter.prototype.pre_import_data = function() {
       var data;
-      return data = {
-        command: MT.EVENTS.PRE_IMPORT_DATA,
-        webpage_url: this.webpage_url
-      };
+      data = this.common_data();
+      data['command'] = MT.EVENTS.PRE_IMPORT_DATA;
+      return data;
     };
 
     WebpageImporter.prototype.import_data = function() {
       var data;
-      return data = {
-        command: MT.EVENTS.IMPORT_DATA,
+      data = this.common_data();
+      data['command'] = MT.EVENTS.IMPORT_DATA;
+      return data;
+    };
+
+    WebpageImporter.prototype.common_data = function() {
+      return {
         webpage_url: this.webpage_url,
         title: this.webpage_title,
         favicon_url: this.favicon_url,
@@ -3959,9 +3963,7 @@ window.tags_display_allowed=false;
           var url;
           if (stylesheet != null) {
             url = stylesheet.href;
-            console.log(url);
             if (_this.is_stylesheet_url_valid(url, true)) {
-              console.log("stylesheet: " + url);
               if (url != null) {
                 if (!_.includes(_this.stylesheet_urls, url)) {
                   return _this.stylesheet_urls.push(url);
@@ -4003,7 +4005,6 @@ window.tags_display_allowed=false;
           valid: this.is_stylesheet_url_valid(stylesheet_url)
         };
         if (this.is_stylesheet_url_valid(stylesheet_url)) {
-          console.log(resolved_stylesheet_url);
           request = new XMLHttpRequest();
           request.open('GET', resolved_stylesheet_url, true);
           request.onload = (function(_this) {
@@ -4058,7 +4059,6 @@ window.tags_display_allowed=false;
 
     StylesheetHandler.prototype.process_stylesheet_content = function(stylesheet_content, resolved_stylesheet_url) {
       var elements, style;
-      console.log(stylesheet_content);
       this.embedded_stylesheet_size_by_urls[resolved_stylesheet_url] = stylesheet_content.length;
       this.export_data[resolved_stylesheet_url]['response_size'] = stylesheet_content.length;
       this.export_data[resolved_stylesheet_url]['success'] = true;

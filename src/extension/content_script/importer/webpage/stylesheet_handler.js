@@ -40,9 +40,7 @@
           var url;
           if (stylesheet != null) {
             url = stylesheet.href;
-            console.log(url);
             if (_this.is_stylesheet_url_valid(url, true)) {
-              console.log("stylesheet: " + url);
               if (url != null) {
                 if (!_.includes(_this.stylesheet_urls, url)) {
                   return _this.stylesheet_urls.push(url);
@@ -84,7 +82,6 @@
           valid: this.is_stylesheet_url_valid(stylesheet_url)
         };
         if (this.is_stylesheet_url_valid(stylesheet_url)) {
-          console.log(resolved_stylesheet_url);
           request = new XMLHttpRequest();
           request.open('GET', resolved_stylesheet_url, true);
           request.onload = (function(_this) {
@@ -139,7 +136,6 @@
 
     StylesheetHandler.prototype.process_stylesheet_content = function(stylesheet_content, resolved_stylesheet_url) {
       var elements, style;
-      console.log(stylesheet_content);
       this.embedded_stylesheet_size_by_urls[resolved_stylesheet_url] = stylesheet_content.length;
       this.export_data[resolved_stylesheet_url]['response_size'] = stylesheet_content.length;
       this.export_data[resolved_stylesheet_url]['success'] = true;
