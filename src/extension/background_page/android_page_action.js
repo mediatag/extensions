@@ -3,18 +3,20 @@
 
   AndroidPageAction = (function() {
     function AndroidPageAction() {
-      this.page_action_displayed = false;
+      if (typeof browser !== "undefined" && browser !== null) {
+        browser.pageAction.onClicked.addListener((function(_this) {
+          return function(tab) {
+            return _this.on_clicked(tab);
+          };
+        })(this));
+      }
     }
 
     AndroidPageAction.prototype.display_page_action = function() {
       return this.get_current_tab((function(_this) {
         return function(tab) {
-          if (!_this.page_action_displayed) {
-            _this.page_action_displayed = true;
-            browser.pageAction.show(tab.id);
-            return browser.pageAction.onClicked.addListener(function(tab) {
-              return _this.on_clicked(tab);
-            });
+          if (typeof browser !== "undefined" && browser !== null) {
+            return browser.pageAction.show(tab.id);
           }
         };
       })(this));
@@ -36,11 +38,13 @@
           return console.log(error);
         };
       })(this);
-      promise = browser.tabs.query({
-        active: true,
-        currentWindow: true
-      });
-      return promise.then(on_success, on_error);
+      if (typeof browser !== "undefined" && browser !== null) {
+        promise = browser.tabs.query({
+          active: true,
+          currentWindow: true
+        });
+        return promise.then(on_success, on_error);
+      }
     };
 
     AndroidPageAction.prototype.on_clicked = function(tab) {

@@ -205,11 +205,15 @@
 
     Color.str_to_hue = function(str) {
       var seeds;
-      seeds = 0;
-      _.each(str.split(''), function(char, i) {
-        return seeds += char.charCodeAt(0) * (i * 31);
-      });
-      return seeds % 360;
+      if ((str != null) && (str.split != null)) {
+        seeds = 0;
+        _.each(str.split(''), function(char, i) {
+          return seeds += char.charCodeAt(0) * (i * 31);
+        });
+        return seeds % 360;
+      } else {
+        return 0;
+      }
     };
 
     Color.hue_from_name = function(name) {

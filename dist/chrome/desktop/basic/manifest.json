@@ -1,8 +1,8 @@
 {
   "name": "mediatag basic",
-  "version": "0.1.67",
+  "version": "0.1.68",
   "manifest_version": 2,
-  "description": "Tag anything",
+  "description": "Your sources of inspiration organized",
   "icons": {
     "16": "logo/mediatag.16.png",
     "19": "logo/mediatag.19.png",

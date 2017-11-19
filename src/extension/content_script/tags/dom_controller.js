@@ -90,10 +90,7 @@
 
     DomController.prototype.add_tags_for_url = function(url, tags) {
       var first_link, links, selector, tag_container, tag_names;
-      if (tags == null) {
-        return;
-      }
-      if (tags.length === 0) {
+      if ((tags == null) || tags.length === 0) {
         return;
       }
       tag_names = _.map(tags, function(tag) {

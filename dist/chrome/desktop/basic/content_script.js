@@ -1814,11 +1814,15 @@ window.tags_display_allowed=false;
 
     Color.str_to_hue = function(str) {
       var seeds;
-      seeds = 0;
-      _.each(str.split(''), function(char, i) {
-        return seeds += char.charCodeAt(0) * (i * 31);
-      });
-      return seeds % 360;
+      if ((str != null) && (str.split != null)) {
+        seeds = 0;
+        _.each(str.split(''), function(char, i) {
+          return seeds += char.charCodeAt(0) * (i * 31);
+        });
+        return seeds % 360;
+      } else {
+        return 0;
+      }
     };
 
     Color.hue_from_name = function(name) {
@@ -1954,6 +1958,7 @@ window.tags_display_allowed=false;
   }
 
   window.MT.EVENTS = {
+    EXTENSION_PAGE_ACTION: "EXTENSION_PAGE_ACTION",
     SCREENSHOT_REQUESTED: "SCREENSHOT_REQUESTED",
     SCREENSHOT_COMPLETED: "SCREENSHOT_COMPLETED",
     SCREENSHOT_ERROR: "SCREENSHOT_ERROR",
@@ -2306,9 +2311,8 @@ window.tags_display_allowed=false;
         return function(event) {
           var data, err;
           if (event.source !== window) {
-            return;
-          }
-          if ((data = event.data) != null) {
+
+          } else if ((data = event.data) != null) {
             try {
               if (data['type'] === MT.EVENTS.TEST_IMPORT_IMAGE) {
                 new MT.Extension.ContentScript.Importer.Image(data);
@@ -2332,9 +2336,10 @@ window.tags_display_allowed=false;
 
   if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
     message_options = {
-      type: "show_page_action"
+      type: MT.EVENTS.EXTENSION_PAGE_ACTION
     };
     if (typeof chrome !== "undefined" && chrome !== null) {
+      console.log("displaying page action");
       chrome.runtime.sendMessage(message_options);
     }
   }
@@ -4194,10 +4199,7 @@ window.tags_display_allowed=false;
 
     DomController.prototype.add_tags_for_url = function(url, tags) {
       var first_link, links, selector, tag_container, tag_names;
-      if (tags == null) {
-        return;
-      }
-      if (tags.length === 0) {
+      if ((tags == null) || tags.length === 0) {
         return;
       }
       tag_names = _.map(tags, function(tag) {
@@ -4504,7 +4506,7 @@ window.tags_display_allowed=false;
     };
 
     UrlsController.prototype.unfetched_urls = function(urls) {
-      if (urls.length === 0) {
+      if ((urls == null) || urls.length === 0) {
         return;
       }
       urls = _.filter(urls, (function(_this) {

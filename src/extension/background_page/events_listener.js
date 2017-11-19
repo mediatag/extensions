@@ -68,7 +68,7 @@
         }
         this.current_new_tab_importer = null;
         break;
-      case "show_page_action":
+      case MT.EVENTS.EXTENSION_PAGE_ACTION:
         MT.Extension.BackgroundPage.AndroidPageAction.display_page_action();
         break;
       case request_type === "new_tab":

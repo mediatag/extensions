@@ -34,7 +34,7 @@
     };
 
     UrlsController.prototype.unfetched_urls = function(urls) {
-      if (urls.length === 0) {
+      if ((urls == null) || urls.length === 0) {
         return;
       }
       urls = _.filter(urls, (function(_this) {

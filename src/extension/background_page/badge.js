@@ -16,10 +16,6 @@
     })(this));
   };
 
-  if (window.extension_browser === 'firefox' && window.extension_os === 'android') {
-
-  } else {
-    chrome.browserAction.onClicked.addListener(on_badge_clicked);
-  }
+  chrome.browserAction.onClicked.addListener(on_badge_clicked);
 
 }).call(this);

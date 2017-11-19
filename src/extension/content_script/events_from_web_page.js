@@ -7,9 +7,8 @@
         return function(event) {
           var data, err;
           if (event.source !== window) {
-            return;
-          }
-          if ((data = event.data) != null) {
+
+          } else if ((data = event.data) != null) {
             try {
               if (data['type'] === MT.EVENTS.TEST_IMPORT_IMAGE) {
                 new MT.Extension.ContentScript.Importer.Image(data);
