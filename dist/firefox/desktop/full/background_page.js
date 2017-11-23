@@ -1691,7 +1691,8 @@ window.tags_display_allowed=true;
 
   AndroidPageAction = (function() {
     function AndroidPageAction() {
-      if (typeof browser !== "undefined" && browser !== null) {
+      this.active = (typeof browser !== "undefined" && browser !== null) && (browser.pageAction != null);
+      if (this.active) {
         browser.pageAction.onClicked.addListener((function(_this) {
           return function(tab) {
             return _this.on_clicked(tab);
@@ -1703,7 +1704,7 @@ window.tags_display_allowed=true;
     AndroidPageAction.prototype.display_page_action = function() {
       return this.get_current_tab((function(_this) {
         return function(tab) {
-          if (typeof browser !== "undefined" && browser !== null) {
+          if (_this.active) {
             return browser.pageAction.show(tab.id);
           }
         };
@@ -1726,7 +1727,7 @@ window.tags_display_allowed=true;
           return console.log(error);
         };
       })(this);
-      if (typeof browser !== "undefined" && browser !== null) {
+      if (this.active) {
         promise = browser.tabs.query({
           active: true,
           currentWindow: true
