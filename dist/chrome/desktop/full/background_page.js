@@ -1701,14 +1701,12 @@ window.tags_display_allowed=true;
       }
     }
 
-    AndroidPageAction.prototype.display_page_action = function() {
-      return this.get_current_tab((function(_this) {
-        return function(tab) {
-          if (_this.active) {
-            return browser.pageAction.show(tab.id);
-          }
-        };
-      })(this));
+    AndroidPageAction.prototype.display_page_action = function(sender) {
+      var tab;
+      tab = sender.tab;
+      if (this.active) {
+        return browser.pageAction.show(tab.id);
+      }
     };
 
     AndroidPageAction.prototype.get_current_tab = function(callback) {
@@ -1758,10 +1756,10 @@ window.tags_display_allowed=true;
   var background_page_listener, process_content_script_event;
 
   background_page_listener = function(request, sender, sendResponse) {
-    return process_content_script_event(request, sendResponse);
+    return process_content_script_event(request, sender, sendResponse);
   };
 
-  process_content_script_event = function(request, sendResponse) {
+  process_content_script_event = function(request, sender, sendResponse) {
     var capturer, ref, request_type, screenshot;
     request_type = request['type'];
     console.log(request_type);
@@ -1825,7 +1823,8 @@ window.tags_display_allowed=true;
         this.current_new_tab_importer = null;
         break;
       case MT.EVENTS.EXTENSION_PAGE_ACTION:
-        MT.Extension.BackgroundPage.AndroidPageAction.display_page_action();
+        MT.Extension.BackgroundPage.AndroidPageAction.display_page_action(sender);
+        sendResponse({});
         break;
       case request_type === "new_tab":
         chrome.tabs.create({

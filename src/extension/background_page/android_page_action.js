@@ -13,14 +13,12 @@
       }
     }
 
-    AndroidPageAction.prototype.display_page_action = function() {
-      return this.get_current_tab((function(_this) {
-        return function(tab) {
-          if (_this.active) {
-            return browser.pageAction.show(tab.id);
-          }
-        };
-      })(this));
+    AndroidPageAction.prototype.display_page_action = function(sender) {
+      var tab;
+      tab = sender.tab;
+      if (this.active) {
+        return browser.pageAction.show(tab.id);
+      }
     };
 
     AndroidPageAction.prototype.get_current_tab = function(callback) {
