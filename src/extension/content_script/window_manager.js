@@ -10,12 +10,29 @@
     function WindowManager() {
       this.process_default_events = bind(this.process_default_events, this);
       WindowManager.__super__.constructor.apply(this, arguments);
+      this.set_extension_presence_element_attributes();
       this.set_event_processor((function(_this) {
         return function(data, event) {
           return _this.process_default_events(data, event);
         };
       })(this));
     }
+
+    WindowManager.prototype.set_extension_presence_element_attributes = function() {
+      var child_element, element_class, expected_environment;
+      element_class = MT.globals.EXTENSION_PRESENCE_CONTAINER_CLASS;
+      if (element_class != null) {
+        this.presence_element = document.getElementsByClassName(element_class)[0];
+        expected_environment = this.presence_element.dataset['environment'];
+        if (expected_environment === window.environment) {
+          child_element = document.createElement('div');
+          child_element.dataset['environment'] = window.environment;
+          child_element.dataset['browser'] = window.extension_browser;
+          child_element.dataset['os'] = window.extension_os;
+          return this.presence_element.appendChild(child_element);
+        }
+      }
+    };
 
     WindowManager.prototype.process_default_events = function(data) {
       var command;

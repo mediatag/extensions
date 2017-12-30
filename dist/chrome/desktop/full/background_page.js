@@ -8,6 +8,7 @@ MT['routes']['extension_imports_image_path'] = '/extension/imports/image';
 MT['routes']['extension_imports_medium_path'] = '/extension/imports/medium';
 MT['routes']['extension_imports_webpage_path'] = '/extension/imports/webpage';
 MT['globals']['IFRAME_CONTAINER_CLASS'] = 'mediatag_iframe_container_class_for_import_from_extension';
+MT['globals']['EXTENSION_PRESENCE_CONTAINER_CLASS'] = 'mediatag_extension_presence';
 MT['globals']['SCREENSHOT_ELEMENT_DATA_CONTAINER_CLASS'] = 'mediatag_screenshot_element_data_container';
 window.environment='production';
 window.server_url='https://mediatag.io';
