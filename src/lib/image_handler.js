@@ -50,8 +50,8 @@
       scale = 1;
       data = null;
       try {
-        x = crop_options['x'];
-        y = crop_options['y'];
+        x = Math.round(crop_options['x']);
+        y = Math.round(crop_options['y']);
         width = crop_options['width'];
         height = crop_options['height'];
         canvas = document.createElement("canvas");
