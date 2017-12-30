@@ -22,14 +22,15 @@
       var child_element, element_class, expected_environment;
       element_class = MT.globals.EXTENSION_PRESENCE_CONTAINER_CLASS;
       if (element_class != null) {
-        this.presence_element = document.getElementsByClassName(element_class)[0];
-        expected_environment = this.presence_element.dataset['environment'];
-        if (expected_environment === window.environment) {
-          child_element = document.createElement('div');
-          child_element.dataset['environment'] = window.environment;
-          child_element.dataset['browser'] = window.extension_browser;
-          child_element.dataset['os'] = window.extension_os;
-          return this.presence_element.appendChild(child_element);
+        if ((this.presence_element = document.getElementsByClassName(element_class)[0]) != null) {
+          expected_environment = this.presence_element.dataset['environment'];
+          if (expected_environment === window.environment) {
+            child_element = document.createElement('div');
+            child_element.dataset['environment'] = window.environment;
+            child_element.dataset['browser'] = window.extension_browser;
+            child_element.dataset['os'] = window.extension_os;
+            return this.presence_element.appendChild(child_element);
+          }
         }
       }
     };
