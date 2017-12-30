@@ -1683,7 +1683,8 @@ window.tags_display_allowed=true;
     MEDIUM_SET_TIME: "MEDIUM_SET_TIME",
     MEDIUM_TIME_UPDATED: "MEDIUM_TIME_UPDATED",
     TEST_IMPORT_IMAGE: "TEST_IMPORT_IMAGE",
-    TEST_IMPORT_WEBPAGE: "TEST_IMPORT_WEBPAGE"
+    TEST_IMPORT_WEBPAGE: "TEST_IMPORT_WEBPAGE",
+    NEW_TAB_IMPORTER: "NEW_TAB_IMPORTER"
   };
 
 }).call(this);
@@ -1814,7 +1815,7 @@ window.tags_display_allowed=true;
           })(this)
         });
         break;
-      case "new_tab_importer":
+      case MT.EVENTS.NEW_TAB_IMPORTER:
         this.current_new_tab_importer = new MT.Extension.BackgroundPage.NewTabImporter(request['import']);
         break;
       case "request_import_data":
@@ -2020,28 +2021,14 @@ window.tags_display_allowed=true;
     }
 
     NewTabImporter.prototype.open_tab = function() {
-      var tab_properties;
+      var import_url, tab_properties, url;
+      console.log(this.data);
+      import_url = this.data['data']['webpage_url'];
+      url = window.server_url + "/dashboard/items/new/web?url=" + import_url;
       tab_properties = {
-        'url': this.data['url']
+        'url': url
       };
-      return chrome.tabs.create(tab_properties, function(tab) {
-        var content_script_execution_details;
-        content_script_execution_details = {
-          file: 'content_script.js'
-        };
-        return chrome.tabs.executeScript(tab.id, content_script_execution_details, (function(_this) {
-          return function() {
-            content_script_execution_details = {
-              code: "new MT.Extension.ContentScript.Importer.NewTab().send_import_data()"
-            };
-            return chrome.tabs.executeScript(tab.id, content_script_execution_details);
-          };
-        })(this));
-      });
-    };
-
-    NewTabImporter.prototype.send_import_data = function(sendResponse) {
-      return sendResponse(this.data['data']);
+      return chrome.tabs.create(tab_properties, function(tab) {});
     };
 
     return NewTabImporter;

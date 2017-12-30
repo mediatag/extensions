@@ -95,6 +95,8 @@
 
     BaseImporter.prototype.start_timeout_count = function() {
       var c, timeout_duration;
+      this.load_in_new_tab();
+      return;
       c = (function(_this) {
         return function() {
           if (_this.is_mounted && (_this.loader_elements_container != null)) {
@@ -159,7 +161,7 @@
     BaseImporter.prototype.load_in_new_tab = function() {
       var message;
       message = {
-        type: "new_tab_importer",
+        type: MT.EVENTS.NEW_TAB_IMPORTER,
         "import": {
           url: this.url,
           data: this.import_data()

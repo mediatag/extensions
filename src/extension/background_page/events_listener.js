@@ -59,7 +59,7 @@
           })(this)
         });
         break;
-      case "new_tab_importer":
+      case MT.EVENTS.NEW_TAB_IMPORTER:
         this.current_new_tab_importer = new MT.Extension.BackgroundPage.NewTabImporter(request['import']);
         break;
       case "request_import_data":

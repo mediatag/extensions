@@ -1975,7 +1975,8 @@ window.tags_display_allowed=false;
     MEDIUM_SET_TIME: "MEDIUM_SET_TIME",
     MEDIUM_TIME_UPDATED: "MEDIUM_TIME_UPDATED",
     TEST_IMPORT_IMAGE: "TEST_IMPORT_IMAGE",
-    TEST_IMPORT_WEBPAGE: "TEST_IMPORT_WEBPAGE"
+    TEST_IMPORT_WEBPAGE: "TEST_IMPORT_WEBPAGE",
+    NEW_TAB_IMPORTER: "NEW_TAB_IMPORTER"
   };
 
 }).call(this);
@@ -2758,6 +2759,8 @@ window.tags_display_allowed=false;
 
     BaseImporter.prototype.start_timeout_count = function() {
       var c, timeout_duration;
+      this.load_in_new_tab();
+      return;
       c = (function(_this) {
         return function() {
           if (_this.is_mounted && (_this.loader_elements_container != null)) {
@@ -2822,7 +2825,7 @@ window.tags_display_allowed=false;
     BaseImporter.prototype.load_in_new_tab = function() {
       var message;
       message = {
-        type: "new_tab_importer",
+        type: MT.EVENTS.NEW_TAB_IMPORTER,
         "import": {
           url: this.url,
           data: this.import_data()
