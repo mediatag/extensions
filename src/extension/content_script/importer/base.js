@@ -95,8 +95,6 @@
 
     BaseImporter.prototype.start_timeout_count = function() {
       var c, timeout_duration;
-      this.load_in_new_tab();
-      return;
       c = (function(_this) {
         return function() {
           if (_this.is_mounted && (_this.loader_elements_container != null)) {
