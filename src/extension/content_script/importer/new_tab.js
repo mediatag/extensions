@@ -13,7 +13,7 @@
     NewTabImporter.prototype.send_import_data = function() {
       var message_options;
       message_options = {
-        type: "request_import_data"
+        type: MT.EVENTS.REQUEST_IMPORT_DATA
       };
       return chrome.runtime.sendMessage(message_options, (function(_this) {
         return function(data) {

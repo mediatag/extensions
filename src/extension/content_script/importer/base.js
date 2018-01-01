@@ -145,6 +145,8 @@
     };
 
     BaseImporter.prototype.send_to_main_window = function(data) {
+      console.log("base.send_to_main_window");
+      console.log(data);
       return MT.Manager.ContentScript.Window.post_message(window, data);
     };
 

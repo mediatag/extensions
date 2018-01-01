@@ -62,7 +62,8 @@
       case MT.EVENTS.NEW_TAB_IMPORTER:
         this.current_new_tab_importer = new MT.Extension.BackgroundPage.NewTabImporter(request['import']);
         break;
-      case "request_import_data":
+      case MT.EVENTS.REQUEST_IMPORT_DATA:
+        console.log("receive main data");
         if ((ref = this.current_new_tab_importer) != null) {
           ref.send_import_data(sendResponse);
         }

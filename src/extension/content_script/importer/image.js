@@ -9,7 +9,7 @@
     function ImageImporter(data1) {
       this.data = data1;
       ImageImporter.__super__.constructor.apply(this, arguments);
-      this.src = this.data.src;
+      this.target_url = this.data.src;
       this.origin = this.data.origin;
       this.title = this.data.title;
       this.url = MT.Url.wrap(MT.routes.extension_imports_image_path);
@@ -26,15 +26,15 @@
 
     ImageImporter.prototype.find_image_attributes = function() {
       var elements, truncated_src;
-      this.image = this.find_image(this.src);
+      this.image = this.find_image(this.target_url);
       if (this.image == null) {
-        this.image = this.find_image(this.src.replace(window.location.href, ''));
+        this.image = this.find_image(this.target_url.replace(window.location.href, ''));
       }
       if (this.image == null) {
-        this.image = this.find_image(this.src.replace(window.location.origin, ''));
+        this.image = this.find_image(this.target_url.replace(window.location.origin, ''));
       }
       if (this.image == null) {
-        elements = this.src.split('/');
+        elements = this.target_url.split('/');
         truncated_src = elements[elements.length - 1];
         this.image = this.find_image(truncated_src);
       }
@@ -61,7 +61,7 @@
       var data;
       return data = {
         'command': MT.EVENTS.IMPORT_DATA,
-        'src': this.src,
+        'target_url': this.target_url,
         'origin': this.origin,
         'title': this.title,
         'datauri': this.datauri,
@@ -73,7 +73,7 @@
     ImageImporter.prototype.get_datauri = function(callback) {
       var capturer;
       capturer = new MT.Extension.ContentScript.Capturer();
-      return capturer.get_image_datauri_from_url(this.src, (function(_this) {
+      return capturer.get_image_datauri_from_url(this.target_url, (function(_this) {
         return function(datauri_from_src) {
           if (_this.image == null) {
             return callback(datauri_from_src);

@@ -14,7 +14,7 @@
       this.image_handler = new MT.Extension.ContentScript.Importer.Webpage.ImageHandler(this);
       this.elements_with_bg_image_handler = new MT.Extension.ContentScript.Importer.Webpage.ElementsWithBgImageHandler(this);
       this.stylesheet_handler = new MT.Extension.ContentScript.Importer.Webpage.StylesheetHandler(this);
-      this.webpage_url = this.data.tab.url;
+      this.target_url = this.data.tab.url;
       this.webpage_title = this.data.tab.title;
       this.favicon_url = this.data.tab.favIconUrl;
       this.url = MT.Url.wrap(MT.routes.extension_imports_webpage_path);
@@ -102,7 +102,7 @@
 
     WebpageImporter.prototype.common_data = function() {
       return {
-        webpage_url: this.webpage_url,
+        target_url: this.target_url,
         title: this.webpage_title,
         favicon_url: this.favicon_url,
         html: this.html_content,

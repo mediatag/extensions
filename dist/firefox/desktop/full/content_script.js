@@ -2809,6 +2809,8 @@ window.tags_display_allowed=true;
     };
 
     BaseImporter.prototype.send_to_main_window = function(data) {
+      console.log("base.send_to_main_window");
+      console.log(data);
       return MT.Manager.ContentScript.Window.post_message(window, data);
     };
 
@@ -2917,7 +2919,7 @@ window.tags_display_allowed=true;
     function ImageImporter(data1) {
       this.data = data1;
       ImageImporter.__super__.constructor.apply(this, arguments);
-      this.src = this.data.src;
+      this.target_url = this.data.src;
       this.origin = this.data.origin;
       this.title = this.data.title;
       this.url = MT.Url.wrap(MT.routes.extension_imports_image_path);
@@ -2934,15 +2936,15 @@ window.tags_display_allowed=true;
 
     ImageImporter.prototype.find_image_attributes = function() {
       var elements, truncated_src;
-      this.image = this.find_image(this.src);
+      this.image = this.find_image(this.target_url);
       if (this.image == null) {
-        this.image = this.find_image(this.src.replace(window.location.href, ''));
+        this.image = this.find_image(this.target_url.replace(window.location.href, ''));
       }
       if (this.image == null) {
-        this.image = this.find_image(this.src.replace(window.location.origin, ''));
+        this.image = this.find_image(this.target_url.replace(window.location.origin, ''));
       }
       if (this.image == null) {
-        elements = this.src.split('/');
+        elements = this.target_url.split('/');
         truncated_src = elements[elements.length - 1];
         this.image = this.find_image(truncated_src);
       }
@@ -2969,7 +2971,7 @@ window.tags_display_allowed=true;
       var data;
       return data = {
         'command': MT.EVENTS.IMPORT_DATA,
-        'src': this.src,
+        'target_url': this.target_url,
         'origin': this.origin,
         'title': this.title,
         'datauri': this.datauri,
@@ -2981,7 +2983,7 @@ window.tags_display_allowed=true;
     ImageImporter.prototype.get_datauri = function(callback) {
       var capturer;
       capturer = new MT.Extension.ContentScript.Capturer();
-      return capturer.get_image_datauri_from_url(this.src, (function(_this) {
+      return capturer.get_image_datauri_from_url(this.target_url, (function(_this) {
         return function(datauri_from_src) {
           if (_this.image == null) {
             return callback(datauri_from_src);
@@ -3024,7 +3026,7 @@ window.tags_display_allowed=true;
       MediumImporter.__super__.constructor.apply(this, arguments);
       this.resize_allowed = true;
       this.service_name = this.data['service_name'];
-      this.medium_url = this.data.tab.url;
+      this.target_url = this.data.tab.url;
       this.url = MT.Url.wrap(MT.routes.extension_imports_medium_path);
       this.init_iframe_message_events();
       this.build_iframe_container_and_loader();
@@ -3134,7 +3136,7 @@ window.tags_display_allowed=true;
     MediumImporter.prototype.send_import_data_to_iframe = function() {
       return this.send_to_iframe({
         'command': MT.EVENTS.IMPORT_DATA,
-        'url': this.medium_url
+        'url': this.target_url
       });
     };
 
@@ -3241,7 +3243,7 @@ window.tags_display_allowed=true;
     NewTabImporter.prototype.send_import_data = function() {
       var message_options;
       message_options = {
-        type: "request_import_data"
+        type: MT.EVENTS.REQUEST_IMPORT_DATA
       };
       return chrome.runtime.sendMessage(message_options, (function(_this) {
         return function(data) {
@@ -3275,7 +3277,7 @@ window.tags_display_allowed=true;
       this.image_handler = new MT.Extension.ContentScript.Importer.Webpage.ImageHandler(this);
       this.elements_with_bg_image_handler = new MT.Extension.ContentScript.Importer.Webpage.ElementsWithBgImageHandler(this);
       this.stylesheet_handler = new MT.Extension.ContentScript.Importer.Webpage.StylesheetHandler(this);
-      this.webpage_url = this.data.tab.url;
+      this.target_url = this.data.tab.url;
       this.webpage_title = this.data.tab.title;
       this.favicon_url = this.data.tab.favIconUrl;
       this.url = MT.Url.wrap(MT.routes.extension_imports_webpage_path);
@@ -3363,7 +3365,7 @@ window.tags_display_allowed=true;
 
     WebpageImporter.prototype.common_data = function() {
       return {
-        webpage_url: this.webpage_url,
+        target_url: this.target_url,
         title: this.webpage_title,
         favicon_url: this.favicon_url,
         html: this.html_content,

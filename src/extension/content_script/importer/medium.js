@@ -11,7 +11,7 @@
       MediumImporter.__super__.constructor.apply(this, arguments);
       this.resize_allowed = true;
       this.service_name = this.data['service_name'];
-      this.medium_url = this.data.tab.url;
+      this.target_url = this.data.tab.url;
       this.url = MT.Url.wrap(MT.routes.extension_imports_medium_path);
       this.init_iframe_message_events();
       this.build_iframe_container_and_loader();
@@ -121,7 +121,7 @@
     MediumImporter.prototype.send_import_data_to_iframe = function() {
       return this.send_to_iframe({
         'command': MT.EVENTS.IMPORT_DATA,
-        'url': this.medium_url
+        'url': this.target_url
       });
     };
 
